@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="情報SE暗記">
+<title>情報システム 一問一答｜診断士2025</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#07090f;--card:#111420;--card2:#181d2e;
+  --accent:#3d7eff;--accent2:#7eb8ff;
+  --correct:#00c9a7;--wrong:#ff5252;--skip:#f5a623;
+  --s3:#ffd700;--s2:#a0b4c8;--s1:#7a8a9a;
+  --text:#eef2ff;--sub:#6a7a9a;--border:#232a40;
+  --glow:rgba(61,126,255,.18)
+}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+/* bg grid */
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(61,126,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(61,126,255,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+.app{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:env(safe-area-inset-top,12px) 16px 100px}
+
+/* ── HEADER ── */
+.header{text-align:center;padding:18px 0 10px}
+.header h1{font-size:17px;font-weight:900;letter-spacing:2px;color:var(--text)}
+.header h1 span{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header .sub{font-size:10px;color:var(--sub);margin-top:5px;letter-spacing:1px}
+
+/* ── PROGRESS BAR ── */
+.pbar-wrap{display:flex;align-items:center;gap:10px;padding:8px 0}
+.pbar-wrap .lbl{font-size:11px;font-weight:700;min-width:28px;text-align:center}
+.pbar{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.pbar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--correct));transition:width .5s cubic-bezier(.4,0,.2,1)}
+
+/* ── CHAPTER LIST ── */
+.ch-list{display:grid;gap:7px;margin:10px 0}
+.ch-item{padding:13px 15px;background:var(--card);border-radius:12px;border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:.18s;position:relative;overflow:hidden}
+.ch-item::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,var(--glow),transparent);opacity:0;transition:.2s}
+.ch-item:active::before{opacity:1}
+.ch-item:active{transform:scale(.98)}
+.ch-name{font-size:12px;font-weight:700;flex:1;line-height:1.4}
+.ch-meta{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.ch-score{font-size:11px;color:var(--sub);font-weight:600}
+.ch-bar{width:50px;height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+.ch-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--correct));border-radius:2px;transition:width .4s}
+
+/* ── STAR BADGE ── */
+.star-badge{font-size:9px;font-weight:900;padding:2px 5px;border-radius:4px;margin-left:4px}
+.s3b{background:rgba(255,215,0,.15);color:var(--s3);border:1px solid rgba(255,215,0,.3)}
+.s2b{background:rgba(160,180,200,.12);color:var(--s2);border:1px solid rgba(160,180,200,.25)}
+.s1b{background:rgba(122,138,154,.1);color:var(--s1);border:1px solid rgba(122,138,154,.2)}
+
+/* ── CARD AREA ── */
+.card-wrap{perspective:1400px;margin:14px 0;animation:fadeIn .28s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+.card{position:relative;width:100%;min-height:260px;cursor:pointer;transform-style:preserve-3d;transition:transform .48s cubic-bezier(.4,0,.2,1)}
+.card.flipped{transform:rotateY(180deg)}
+.card-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:14px;padding:22px 18px;display:flex;flex-direction:column;justify-content:center}
+/* front */
+.card-front{background:linear-gradient(145deg,#141828,#0f1420);border:1px solid var(--border)}
+.card-front::after{content:'';position:absolute;inset:0;border-radius:14px;background:radial-gradient(ellipse at 30% 20%,rgba(61,126,255,.06),transparent 60%);pointer-events:none}
+.card-label{font-size:9px;font-weight:900;letter-spacing:3px;margin-bottom:10px;color:var(--accent2)}
+.card-q{font-size:14px;line-height:1.75;font-weight:600}
+.card-hint{position:absolute;bottom:14px;right:16px;font-size:9px;color:var(--sub);letter-spacing:.5px}
+.card-no{position:absolute;top:14px;right:16px;font-size:10px;color:var(--sub);font-weight:700}
+/* back */
+.card-back{background:linear-gradient(145deg,#0c1a15,#0f1c18);border:1px solid rgba(0,201,167,.22);transform:rotateY(180deg)}
+.card-back::after{content:'';position:absolute;inset:0;border-radius:14px;background:radial-gradient(ellipse at 70% 80%,rgba(0,201,167,.06),transparent 60%);pointer-events:none}
+.card-a-label{font-size:9px;font-weight:900;letter-spacing:3px;margin-bottom:10px;color:var(--correct)}
+.card-a{font-size:13px;line-height:1.85;font-weight:500}
+
+/* ── ACTION BUTTONS ── */
+.actions{display:flex;gap:8px;margin:12px 0}
+.act-btn{flex:1;padding:13px 6px;border:none;border-radius:11px;font-size:12px;font-weight:700;cursor:pointer;transition:.18s;font-family:inherit;-webkit-appearance:none;letter-spacing:.5px}
+.act-btn:active{transform:scale(.95)}
+.btn-wrong{background:rgba(255,82,82,.12);color:var(--wrong);border:1px solid rgba(255,82,82,.28)}
+.btn-skip{background:rgba(245,166,35,.1);color:var(--skip);border:1px solid rgba(245,166,35,.25)}
+.btn-ok{background:rgba(0,201,167,.12);color:var(--correct);border:1px solid rgba(0,201,167,.28)}
+
+/* ── MODE FILTER ── */
+.mode-bar{display:flex;gap:5px;flex-wrap:wrap;margin:6px 0}
+.mode-btn{padding:5px 11px;border-radius:14px;font-size:10px;font-weight:700;background:var(--card);border:1px solid var(--border);color:var(--sub);cursor:pointer;transition:.18s;-webkit-appearance:none;font-family:inherit}
+.mode-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 0 10px rgba(61,126,255,.35)}
+
+/* ── DIFFICULTY FILTER ── */
+.diff-bar{display:flex;gap:5px;margin:4px 0 8px}
+.diff-btn{padding:4px 10px;border-radius:12px;font-size:10px;font-weight:700;border:1px solid var(--border);color:var(--sub);cursor:pointer;background:var(--card);transition:.18s;font-family:inherit;-webkit-appearance:none}
+.diff-btn.d3.active{background:rgba(255,215,0,.15);color:var(--s3);border-color:rgba(255,215,0,.4)}
+.diff-btn.d2.active{background:rgba(160,180,200,.12);color:var(--s2);border-color:rgba(160,180,200,.3)}
+.diff-btn.d1.active{background:rgba(122,138,154,.1);color:var(--s1);border-color:rgba(122,138,154,.25)}
+.diff-btn.dall.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* ── NAV ── */
+.nav{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:center;gap:7px;padding:10px 16px calc(env(safe-area-inset-bottom,8px)+8px);background:linear-gradient(transparent,var(--bg) 35%);z-index:10}
+.nav-btn{padding:8px 18px;border-radius:20px;font-size:11px;font-weight:700;background:var(--card);border:1px solid var(--border);color:var(--sub);cursor:pointer;font-family:inherit;-webkit-appearance:none;transition:.18s}
+.nav-btn:active{transform:scale(.95)}
+.nav-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 0 12px rgba(61,126,255,.4)}
+.nav-back{padding:6px 12px;border-radius:10px;font-size:11px;font-weight:700;background:transparent;border:1px solid var(--border);color:var(--sub);cursor:pointer;font-family:inherit;-webkit-appearance:none}
+
+/* ── EMPTY / UTIL ── */
+.empty{text-align:center;padding:50px 20px;color:var(--sub);font-size:13px;line-height:1.8}
+.reset-btn{display:block;margin:24px auto 0;padding:8px 20px;border-radius:10px;font-size:11px;background:transparent;border:1px solid var(--border);color:var(--sub);cursor:pointer;font-family:inherit;-webkit-appearance:none;transition:.18s}
+.reset-btn:hover{border-color:var(--wrong);color:var(--wrong)}
+.sub-header{display:flex;align-items:center;justify-content:space-between;padding:6px 0 4px}
+.sub-title{font-size:12px;font-weight:700;flex:1;text-align:center;color:var(--text)}
+.count-badge{font-size:10px;color:var(--sub);font-weight:600}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+<script>
+/* ════════════════════════════════
+   DATA  –  SHEET 01〜17 全210問
+════════════════════════════════ */
+const D=[
+{title:"SHEET 01｜コンピュータの5大装置",cards:[
+{q:"コンピュータの5大装置を答えよ。",a:"入力装置・出力装置・記憶装置・制御装置・演算装置",s:2},
+{q:"USBハブを介して接続できる最大台数は？",a:"127台",s:2},
+{q:"IEEE1394の接続対象機器と最大接続台数は？",a:"デジタルビデオカメラなどAV機器。最大63台",s:2},
+{q:"シリアルATA（SATA）は何を接続するための規格か？",a:"内蔵HDD",s:2},
+{q:"e-SATAとSATAの違いは何か？",a:"SATAは内蔵HDDの接続規格。e-SATAはSATAの発展形で外付けHDDを接続する",s:2},
+{q:"DisplayPortの特徴は？他のディスプレイ接続規格にはない点は？",a:"複数のディスプレイをデイジーチェーン接続できる点が他規格にはない特徴",s:1},
+{q:"USB 2.0とUSB 3.Xをコネクタの内部の色で見分けるには？",a:"USB 2.0は内部が白か黒。USB 3.Xは内部が青",s:2},
+{q:"タッチパネルの3方式のうち、マルチタッチ（複数点同時操作）に対応できないのはどれか？",a:"抵抗膜方式。静電容量方式・赤外線方式はマルチタッチ対応",s:3},
+{q:"主記憶装置と補助記憶装置の違いを「揮発性」「用途」の2点で述べよ。",a:"主記憶装置：揮発性・一時的な作業領域。補助記憶装置：不揮発性・長期保存用",s:3},
+{q:"MIPSとFLOPSの違いは何か？",a:"MIPSは1秒間に実行できる命令数（百万回単位）。FLOPSは1秒間に実行できる浮動小数点演算数",s:3},
+{q:"CPIとクロック周波数の違いは？",a:"CPIは1命令の実行に必要なクロック数。クロック周波数はCPUが動作するリズム（速度）",s:2},
+{q:"GPUはCPUと比較して何が得意か？ディープラーニングとの関係は？",a:"単純な計算の大量処理が得意。ディープラーニングの学習処理にも活用される。CPUは複雑な計算が得意",s:3},
+{q:"バスとは何か？現在主流のバス規格は？",a:"各機器をつなぐデータ伝送路。現在はPCI Expressが主流",s:1},
+{q:"Bluetoothが使用する周波数帯は？電子レンジや無線LANと干渉する理由は？",a:"2.4GHz帯。電子レンジや無線LAN（2.4GHz帯）と同じ帯域を使うため干渉が起きる",s:2},
+{q:"IrDAとBluetoothの通信方式の違いは？",a:"IrDAは赤外線を使用。Bluetoothは電波（2.4GHz帯）を使用",s:1},
+{q:"ホットプラグとは何か？USBとの関係は？",a:"電源を入れたまま周辺機器の着脱ができる機能。USBは代表的なホットプラグ対応インターフェース",s:1}
+]},
+{title:"SHEET 02｜記憶装置",cards:[
+{q:"記憶素子の速度順を答えよ（速い順）。",a:"レジスタ→キャッシュメモリ→主記憶装置（メインメモリ）→補助記憶装置（HDD/SSD）",s:3},
+{q:"レジスタとキャッシュメモリの役割の違いは？",a:"レジスタはCPU内部の演算用超高速記憶素子。キャッシュメモリはCPUとメインメモリの速度差を埋める高速バッファ",s:3},
+{q:"キャッシュメモリの平均アクセス時間の計算式を答えよ。（ヒット率P、キャッシュ時間Tc、メモリ時間Tm）",a:"平均アクセス時間 ＝ Tc × P ＋ Tm × (1－P)\n例：Tc=10ns、Tm=100ns、P=0.9のとき → 10×0.9＋100×0.1 ＝ 19ns",s:3},
+{q:"SRAMとDRAMで「処理速度」はどちらが速いか？",a:"SRAMが速い",s:3},
+{q:"SRAMとDRAMで「リフレッシュ」が必要なのはどちらか？その理由は？",a:"DRAMが必要。電荷でデータを保持するため、定期的に電荷を補充しないとデータが失われる",s:3},
+{q:"SRAMとDRAMの記憶方式の違いは？",a:"SRAMはフリップフロップ回路で記憶。DRAMは電荷で記憶",s:2},
+{q:"SDRAMとDDR SDRAMの違いは？現在の主流は？",a:"SDRAMはCPUのクロックに同期したDRAM。DDR SDRAMはSDRAMの進化型で現在の主流",s:2},
+{q:"VRAMの用途は？",a:"画像表示専用のメモリ（Video RAM）",s:1},
+{q:"マスクROM・EEPROM・フラッシュメモリを「書き換え可否」で比較せよ。",a:"マスクROM：製造時に書き込み後は読み取り専用（書き換え不可）。EEPROM：電気的に書き換え可能。フラッシュメモリ：電気的に書き換え可能（EEPROMの一種）",s:3},
+{q:"フラッシュメモリのNAND型はどんな用途に使われるか？NOR型との違いは？",a:"NAND型：ページ単位で読み書き・書き込み速度速い→USBメモリ・SSDに使用。NOR型：ランダムアクセス可能・読み出し速度速い→マイコン等組み込み機器に使用",s:3},
+{q:"仮想記憶の目的は何か？",a:"補助記憶装置を使って、物理メモリの容量以上のプログラムを実行できるようにすること",s:3},
+{q:"スワッピングとスラッシングの違いは？スラッシングはなぜ問題か？",a:"スワッピングは使用頻度の低いページを補助記憶装置に退避させる正常な動作。スラッシングはスワッピングが頻発してシステム性能が極端に低下した状態",s:3},
+{q:"スラッシングへの対策を2つ答えよ。",a:"①不要なプログラムを停止する②物理メモリを増設する",s:2},
+{q:"デフラグメンテーション（デフラグ）が必要になる原因と効果は？",a:"ファイルの削除・追加を繰り返すとHDD上でデータが断片化するため、それを整理して読み書き速度を改善する",s:2},
+{q:"光学ディスクの規格で繰り返し書き換えができるのは？-ROMと-Rとの違いは？",a:"-ROMは読み取り専用。-Rは一度のみ書き込み可。-RW・-RAMはともに繰り返し書き換え可能",s:2},
+{q:"NASとSANを「接続方式」で比較せよ。",a:"NAS：記憶装置がLANに直接接続。SAN：複数のサーバと記憶装置を専用高速ネットワークで接続",s:3},
+{q:"シンプロビジョニングの目的は？従来型との違いは？",a:"ストレージを仮想化して割り当て、実データの増加に応じて物理容量を増設する。従来型は最初から必要容量を全割り当て",s:2}
+]},
+{title:"SHEET 03｜ソフトウェア",cards:[
+{q:"OSの5大機能を答えよ。",a:"①ジョブ管理②タスク管理③記憶管理④入出力管理⑤ユーザー管理",s:3},
+{q:"ジョブとタスクはそれぞれ誰の視点で見た処理単位か？",a:"ジョブ：ユーザーから見た処理の単位。タスク：コンピュータから見た処理の単位",s:3},
+{q:"ディスパッチングとは何か？どのタイミングで行われるか？",a:"CPUが空いたとき（実行状態のタスクが終了・待ち状態に移行したとき）に、実行可能状態のタスクにCPU使用権を与える機能",s:3},
+{q:"タスクスケジューリングの「優先度方式」と「ラウンドロビン方式」の違いは？",a:"優先度方式は優先度の高いタスクから順に実行。ラウンドロビン方式は全タスクに均等に順番でCPU時間を割り当てる",s:2},
+{q:"スプーリングはなぜ必要か？どのように機能するか？",a:"プリンタなど低速な出力装置がCPUを占有しないよう、出力データをメモリにいったん書き込んでCPUを解放し、CPUが別の処理を続けられるようにする",s:3},
+{q:"カーネル・シェル・デーモンの役割の違いは？",a:"カーネル：OSの中核。シェル：ユーザーとカーネルの仲介役。デーモン：バックグラウンドで常駐動作するプロセス",s:2},
+{q:"ミドルウェアはOSとアプリのどちらに近いか？具体例は？",a:"OSとアプリの中間。DBMSやWebサーバソフトウェアがミドルウェアの代表例",s:2},
+{q:"OSSと「フリーウェア」の決定的な違いは何か？",a:"OSSはソースコードを公開し改変・再配布の自由を与える。フリーウェアは無料で使えるが改変・再配布は禁止",s:3},
+{q:"コピーレフト型ライセンスの代表例はGNU GPL。非コピーレフト型の代表例は？",a:"MIT License",s:2},
+{q:"LAMPの各要素を答えよ。",a:"Linux（OS）・Apache（Webサーバ）・MySQL（DB）・PHP/Perl/Python（プログラミング言語）",s:2},
+{q:"オープンデータの3条件を答えよ。",a:"①二次利用可能な利用ルール②機械判読に適している③無償で利用できる形で公開",s:2},
+{q:"電源投入後の内部動作を順番に答えよ。",a:"①CPUがBIOSを起動→②BIOSが最初にアクセスする場所を指示→③OSがメモリに読み込まれる→④OSが全メモリを管理",s:2},
+{q:"プラグアンドプレイとは何か？",a:"コンピュータに周辺機器を接続するとき、特別な設定なく差し込むだけで自動認識して使える機能",s:1}
+]},
+{title:"SHEET 04｜プログラム",cards:[
+{q:"コンパイラ型とインタプリタ型の違いを「変換方式・速度・バグ発見」の3点で比較せよ。",a:"コンパイラ型：一括変換・実行速度速い・バグ発見しにくい。インタプリタ型：1行ずつ解釈・実行速度遅い・バグ発見しやすい",s:3},
+{q:"スクリプト言語の特徴を3点挙げよ。",a:"①開発速度が速い②サーバ上で動く③実行速度が遅い（大半がインタプリタ型）",s:2},
+{q:"機械語・アセンブラ・高水準言語は何世代に対応するか？",a:"機械語：第1世代。アセンブラ：第2世代。高水準言語（C言語・COBOL等）：第3世代",s:2},
+{q:"手続き型とオブジェクト指向型の本質的な違いは？",a:"手続き型：関数を選んでデータを順番に操作する。オブジェクト指向型：メッセージを出してオブジェクト自身が動く（データと手続きがオブジェクトにカプセル化されている）",s:3},
+{q:"プログラム実行の流れを4段階で答えよ。",a:"ソースプログラム →［コンパイラ］→ オブジェクトモジュール →［リンカ］→ ロードモジュール →［ローダ］→ 実行",s:3},
+{q:"Javaアプレットと Javaサーブレットはどちらがサーバ側で処理されるか？",a:"Javaサーブレット。Javaアプレットはクライアント側でダウンロードして処理",s:3},
+{q:"AjaxとSSIの違いは？Ajaxの特徴は？",a:"AjaxはJavaScriptを使ったクライアント側の非同期通信技術（ページ全体を再読み込みせず部分更新）。SSIはHTMLにプログラムを埋め込みサーバ側で処理して送信する",s:2},
+{q:"XMLがHTMLより優れている点は何か？",a:"データの意味を定義できるため汎用性が高い。HTMLはレイアウト・表示用途に特化しているのに対し、XMLはデータ構造・意味の定義が可能",s:2}
+]},
+{title:"SHEET 05｜ファイル・データ分析",cards:[
+{q:"ラスタ形式とベクタ形式の本質的な違いは？",a:"ラスタ形式はピクセル（点）の集まりで表現するため拡大するとギザギザになる。ベクタ形式は数式・座標で表現するため拡大しても劣化しない",s:3},
+{q:"JPEG・GIF・PNGの圧縮方式の違いは？",a:"JPEGは非可逆圧縮（画質が劣化する）。GIFはランレングス方式の可逆圧縮（256色制限あり）。PNGはGIFの機能拡張版（フルカラー対応・可逆圧縮）",s:3},
+{q:"PCM（パルス符号変調）の3プロセスを順番に答えよ。",a:"①標本化（アナログ信号をサンプリング）→②量子化（サンプル値を段階数値に変換）→③符号化（0と1のデジタルデータに変換）",s:3},
+{q:"ASCIIとUnicodeのビット数・用途の違いは？",a:"ASCII：7ビット・英数字のみ。Unicode（UTF-8/UTF-16）：2バイト以上・多言語対応。シフトJIS/EUC：2バイト・日本語対応",s:3},
+{q:"テキストファイルとバイナリファイルの違いは？それぞれの具体例は？",a:"テキストファイルはメモ帳でも開ける文字情報のみ（HTML・CSVなど）。バイナリファイルは特定アプリでのみ開ける（画像・実行ファイルなど）",s:2},
+{q:"固定長ファイルと可変長ファイルの違いは？",a:"固定長ファイルはデータの区切りなし・レコード長一定（メインフレームなど）。可変長ファイルはデータの区切り（区切り文字）あり（CSVなど）",s:2},
+{q:"データウェアハウス（DWH）・データマート・データレイクの違いを答えよ。",a:"DWH：基幹業務データを時系列に集積・一元管理（主に分析用）。データマート：DWHから目的・ユーザーを絞って抽出したもの。データレイク：未構造データも利用目的未確定のままそのまま格納",s:3},
+{q:"OLAPの「ドリルダウン」「スライス」「ダイス」の違いは？",a:"ドリルダウン：集計の粒度を細かくする（逆はドリルアップ）。スライス：1軸を固定して他の軸を変える。ダイス：複数の軸を切り替えながら分析する",s:3},
+{q:"キュー（Queue）の動作原理とスタック（Stack）の動作原理の違いは？",a:"キューはFIFO（First In First Out：先入れ先出し）。スタックはLIFO（Last In First Out：後入れ先出し）",s:3},
+{q:"データマイニングとデータディクショナリの違いは？",a:"データマイニングは大容量データを解析して隠れた法則・関係性を発見する分析技術。データディクショナリは扱うデータの定義をまとめた一覧（メタデータ管理）",s:2}
+]},
+{title:"SHEET 06｜データベース",cards:[
+{q:"リレーショナルDBとNoSQLの使い分けは？",a:"リレーショナルDB：構造化データ・高い一貫性が必要な基幹系・会計系。NoSQL：非構造化データ・大量データ・高速処理が必要なビッグデータ・eビジネス系",s:3},
+{q:"RDBの基本3操作を答えよ。それぞれ行・列どちらに作用するか？",a:"選択：条件を満たす行を絞り込む。射影：必要な列を絞り込む。結合：共通の列でテーブルを結合する",s:3},
+{q:"NoSQLの種類を5つ挙げ、それぞれの特徴を1行で答えよ。",a:"①ドキュメント指向DB：文書形式を扱う②カラムナーDB：大量データ集計が得意③キーバリューストア：キーとバリューで紐付ける④グラフ指向DB：グラフ構造でデータ管理⑤オブジェクト指向DB：プログラムが動きやすい設計",s:3},
+{q:"インメモリデータベースの特徴とトレードオフは？",a:"データをすべてメインメモリ上に格納するため応答時間が短い。ただし揮発性のため障害時のデータ消失リスクがある",s:2},
+{q:"ACID特性の「A（Atomicity）」とは何か？",a:"原子性。トランザクションの処理が「すべて完了」か「すべて未実行」のいずれかになり、途中で止まることがない",s:3},
+{q:"ACID特性の「C（Consistency）」とは何か？",a:"整合性。トランザクション実行後も、データの整合性・一貫性が保たれている",s:3},
+{q:"ACID特性の「I（Isolation）」とは何か？",a:"独立性。複数のトランザクションが同時実行されても、互いに影響を受けない",s:3},
+{q:"ACID特性の「D（Durability）」とは何か？",a:"耐久性（永続性）。コミット（確定）されたトランザクションの結果は、障害が発生しても失われない",s:3},
+{q:"デッドロックとはどのような状態か？具体例で説明せよ。",a:"複数のトランザクションが互いに相手のロックが解除されるのを待ち合って、処理が永久に進まなくなる状態。例：ユーザーAがDB-aをロックしDB-bの解除待ち、同時にユーザーBがDB-bをロックしDB-aの解除待ちになる",s:3},
+{q:"ロックの粒度が「粗い」場合と「細かい」場合のトレードオフを答えよ。",a:"粒度が粗い：処理負担小・並列実行できるトランザクション数少。粒度が細かい：処理負担大・並列実行できるトランザクション数多",s:3},
+{q:"ロールバックはどんな障害のとき使うか？ロールフォワードは？",a:"ロールバック：軽い障害（トランザクションエラー等）→更新前ログを使って処理を取り消す。ロールフォワード：重い障害（HDD破損等）→バックアップから更新後ログを使って前進復旧",s:3},
+{q:"フルバックアップ・差分バックアップ・増分バックアップを「バックアップ時間」と「復旧時間」で比較せよ。",a:"フルバックアップ：バックアップ時間長い・復旧時間短い。差分：中間・中間。増分：バックアップ時間短い・復旧時間長い",s:3},
+{q:"三層スキーマの3層を外から順に答えよ。各層の役割は？",a:"外部スキーマ（ユーザーが見るビュー）→概念スキーマ（DB全体の論理構造）→内部スキーマ（物理的な格納方法）",s:3}
+]},
+{title:"SHEET 07｜データベース操作・モバイル端末",cards:[
+{q:"SQLで「条件を満たす行を取り出す」基本構文を答えよ。",a:"SELECT 列名 FROM 表名 WHERE 条件",s:3},
+{q:"ORDER BYで何も指定しないとき、昇順・降順どちらになるか？",a:"昇順（ASC）がデフォルト",s:3},
+{q:"LIKE演算子で「末尾が"ゴ"の文字列」を抽出するSQL条件式は？",a:"WHERE 列名 LIKE '%ゴ'　（%は任意の文字列を意味する）",s:3},
+{q:"IS NULLとIS NOT NULLをどう使い分けるか？",a:"IS NULLは値が空（未入力）の行を抽出。IS NOT NULLは値が入っている行を抽出。「= NULL」は不可",s:2},
+{q:"BETWEEN A AND Bの境界値の扱いは？（A・Bは含まれるか？）",a:"AもBも含む（A以上B以下）",s:3},
+{q:"UNIONは何をするSQL演算子か？重複行の扱いは？",a:"複数のSELECT結果を縦につなげて1つにする。デフォルトで重複行を除去する（重複を残すにはUNION ALL）",s:2},
+{q:"ストアドプロシージャを使うメリットは？",a:"一連のSQL処理をDBMSに保存しておき、1回の呼び出しで実行できる。ネットワーク転送量削減・処理速度向上・セキュリティ強化",s:2},
+{q:"第1正規形・第2正規形・第3正規形の条件を、それぞれ1文で答えよ。",a:"第1正規形：1セルに1つの値（繰り返しグループなし）。第2正規形：主キーの一部への部分依存を排除。第3正規形：主キー以外の項目への推移的依存を排除",s:3},
+{q:"MNOとMVNOの違いは？格安SIMはどちらか？",a:"MNO（移動体通信事業者）は自社で回線網を保有し通信サービスを提供。MVNO（仮想移動体通信事業者）は他社の回線を借りてサービスを提供する。格安SIMはMVNO",s:3},
+{q:"BYODとCOPEのリスクの違いは？",a:"BYODは従業員の私物端末を業務利用するため、セキュリティポリシーの徹底が難しい。COPEは企業が端末を貸与するため管理はしやすいが、私的利用ルールの設定が必要",s:3},
+{q:"シャドーITはなぜセキュリティリスクになるか？",a:"企業が把握していない機器・サービスが使われるため、セキュリティポリシーを適用できず、情報漏洩等の事故が起きやすい",s:3},
+{q:"MDMのリモートロック・リモートワイプ・ローカルワイプの違いは？",a:"リモートロック：遠隔操作で端末をロック。リモートワイプ：遠隔操作でデータ消去。ローカルワイプ：パスワードを一定回数間違えると端末が自動でデータ消去",s:3}
+]},
+{title:"SHEET 08｜ネットワーク",cards:[
+{q:"CSMA/CDとCSMA/CAの使われる環境と衝突対策の違いは？",a:"CSMA/CD：有線LAN用。衝突を検知したら再送する。CSMA/CA：無線LAN用。衝突を回避（他が送信中なら待つ）",s:3},
+{q:"CSMA/CDはトラフィックが増加するとなぜ遅くなるか？",a:"衝突頻度が増加し、再送信が増えるため。スイッチングハブへの切り替えで衝突ドメインを分割して解決できる",s:3},
+{q:"イーサネット（IEEE802.3）と無線LAN（IEEE802.11）は何が違うか？",a:"イーサネットは有線LAN規格でCSMA/CDを使用。無線LAN（IEEE802.11シリーズ）はCSMA/CAを使用",s:2},
+{q:"リピータ・ブリッジ・ルータ・ゲートウェイをOSI参照モデルの層と対応させて答えよ。",a:"リピータ/ハブ：第1層（物理層）。ブリッジ/スイッチングハブ：第2層（データリンク層）。ルータ：第3層（ネットワーク層）。ゲートウェイ：第4層以上（異なるプロトコル変換）",s:3},
+{q:"スイッチングハブが通常のハブより速い理由は？",a:"MACアドレスを識別して宛先のポートにのみデータを送るため、不要な衝突が減るから",s:3},
+{q:"MACアドレスは何ビットか？前半・後半の意味は？",a:"合計48ビット。前半24ビットはベンダーID（製造者識別）、後半24ビットは固有製造番号",s:3},
+{q:"帯域幅・レイテンシ・パケットロス・ジッタの違いは？",a:"帯域幅：単位時間あたりの最大データ転送量。レイテンシ：転送要求から受信までの遅延時間。パケットロス：パケットの破損・消失。ジッタ：信号の時間的ズレ・揺らぎ（音声・映像の乱れの原因）",s:3},
+{q:"インフラストラクチャモードとアドホックモードの違いは？",a:"インフラストラクチャモードはアクセスポイントを経由して接続。アドホックモードは端末同士が直接通信",s:2},
+{q:"WANとLANの違いは？",a:"LAN（Local Area Network）は限定された範囲内のネットワーク。WAN（Wide Area Network）は離れたLAN同士を接続する広域ネットワーク",s:1}
+]},
+{title:"SHEET 09｜インターネット",cards:[
+{q:"固定回線の通信速度を遅い順に並べよ。",a:"電話回線 → ISDN → ADSL → FTTH（光ファイバ）",s:3},
+{q:"IPv4とIPv6のビット数・互換性を答えよ。",a:"IPv4：32ビット。IPv6：128ビット。両者に互換性はない",s:3},
+{q:"グローバルIPアドレスとプライベートIPアドレスの違いは？",a:"グローバルIP：インターネット上で使われる一意のアドレス（重複不可）。プライベートIP：LAN内のみで使われるアドレス（他のLANとの重複は許容）",s:3},
+{q:"DHCPが自動配布する情報を4つ答えよ。",a:"①端末のIPアドレス②サブネットマスク③デフォルトゲートウェイ④DNSサーバのIPアドレス",s:3},
+{q:"DNSはどんな変換を行うか？",a:"ドメイン名（例：www.example.com）をIPアドレスに変換する",s:3},
+{q:"NATとIPマスカレード（NAPT）の違いは？",a:"NAT：1つのグローバルIPを1つのプライベートIPに変換（1対1）。IPマスカレード：1つのグローバルIPを複数のプライベートIPに変換（1対多）",s:3},
+{q:"ARPはどんな変換を行うか？",a:"IPアドレスからMACアドレスを取得する（Address Resolution Protocol）",s:3},
+{q:"インターネットVPNとIP-VPNをセキュリティとコストで比較せよ。",a:"インターネットVPN：インターネット上に構築・コスト低・セキュリティ低。IP-VPN：通信事業者の閉域IP網上に構築・コスト高・セキュリティ高",s:3},
+{q:"SMTP・POP3・IMAPの役割の違いは？",a:"SMTP：メール送信用。POP3：メール受信用・サーバからすべてダウンロード。IMAP：メール受信用・サーバにメールを残したまま複数端末で管理可能",s:3},
+{q:"ccTLDとgTLDの違いは？それぞれ例を挙げよ。",a:"ccTLD（国別）：.jp（日本）・.us（米国）など。gTLD（分野別）：.com（商業）・.org（非営利）など",s:2},
+{q:"CIDR表記とは何か？例を挙げよ。",a:"IPアドレスのネットワーク部のビット数を「/数字」で示す表記。例：192.168.1.0/24はネットワーク部が24ビット",s:2}
+]},
+{title:"SHEET 10｜TCP/IPとプロトコル",cards:[
+{q:"OSI基本参照モデルの7層を第7層から順に答えよ。",a:"第7層：アプリケーション→第6層：プレゼンテーション→第5層：セッション→第4層：トランスポート→第3層：ネットワーク→第2層：データリンク→第1層：物理層　（覚え方：ア・プ・セ・ト・ネ・デ・ブ）",s:3},
+{q:"TCP/IPの4層はOSI7層のどれに対応するか？",a:"アプリケーション層（OSI 5〜7層）・トランスポート層（OSI 4層）・インターネット層（OSI 3層）・ネットワークインターフェース層（OSI 1〜2層）",s:3},
+{q:"TCPとUDPを「信頼性・速度・用途」で比較せよ。",a:"TCP：信頼性高・速度低・用途はメール・ファイル転送等。UDP：信頼性低・速度高・用途はビデオ通話・リアルタイム通信",s:3},
+{q:"TCPは「コネクション型」か「コネクションレス型」か？UDPは？",a:"TCP：コネクション型（通信前に接続確立）。UDP：コネクションレス型（接続確立なしに送信）",s:3},
+{q:"HTTPとFTPの用途の違いは？",a:"HTTP：WebブラウザとWebサーバ間でハイパーテキストを送受信。FTP：ファイル転送専用（HPのアップロード等）",s:2},
+{q:"SNMPとは何か？何を管理するか？",a:"Simple Network Management Protocol。ネットワーク上のルータやPCの状態を監視・管理するプロトコル",s:2},
+{q:"ICMPを使った「ping」と「traceroute」の用途の違いは？",a:"ping：対象ホストと通信可能かどうかをチェック。traceroute：パケットが通る経路を確認",s:3},
+{q:"ARPはTCP/IPの何層で動作するか？",a:"インターネット層（OSI参照モデルではネットワーク層）",s:2}
+]},
+{title:"SHEET 11｜システム構成技術",cards:[
+{q:"集中処理と分散処理を「データ一貫性」「拡張性」「障害の影響範囲」で比較せよ。",a:"集中処理：データ一貫性○・拡張性×・障害時は全停止。分散処理：データ一貫性×・拡張性○・障害の影響は限定的",s:3},
+{q:"2層アーキテクチャと3層アーキテクチャの違いは？3層の利点は？",a:"2層：クライアントにアプリ・DB両方の負荷がかかる。3層（プレゼンテーション/アプリケーション/DB）：各層を独立して開発・保守できる",s:3},
+{q:"ホスト型・ハイパーバイザ型・コンテナ型仮想化の違いは？",a:"ホスト型：ホストOS上に仮想化ソフトウェアを動かし、その上にゲストOS。ハイパーバイザ型：ハードウェア上に直接ハイパーバイザを置く（オーバーヘッド小）。コンテナ型：カーネルを共有し軽量・起動速い（Docker等）",s:3},
+{q:"スループット・レスポンスタイム・ターンアラウンドタイムの違いは？",a:"スループット：単位時間あたりの処理量。レスポンスタイム：コンピュータが応答を返すまでの時間。ターンアラウンドタイム（TAT）：ジョブ投入から結果受領までの全体時間",s:3},
+{q:"RASISの5つの指標と対応する尺度を答えよ。",a:"Reliability（信頼性）→MTBF。Availability（可用性）→稼働率。Serviceability（保守性）→MTTR。Integrity（完全性）→定量指標なし。Security（安全性）→定量指標なし",s:3},
+{q:"稼働率の計算式を答えよ。",a:"稼働率 ＝ MTBF ÷（MTBF ＋ MTTR）\n例：MTBF=90h、MTTR=10h → 90÷(90+10) ＝ 0.9（90%）",s:3},
+{q:"フォールトトレランス・フェイルセーフ・フェイルソフト・フールプルーフを1行で区別せよ。",a:"フォールトトレランス：障害発生時も稼働継続。フェイルセーフ：故障時に安全側へ動作。フェイルソフト：機能を一部縮退しながら稼働継続。フールプルーフ：誤操作・誤使用ができない設計",s:3},
+{q:"フォールトアボイダンスとフォールトマスキングの違いは？",a:"フォールトアボイダンス：障害が発生しないよう予防する。フォールトマスキング：障害が発生しても外部に影響が出ないよう隠蔽する（冗長化等）",s:2},
+{q:"RAID0・RAID1・RAID5の方式と特徴を答えよ。",a:"RAID0：ストライピング（複数ディスクに分散書き込み）→高速化。RAID1：ミラーリング（同じデータを2台に書き込み）→高信頼。RAID5：データ＋パリティを分散→速度と信頼性のバランス",s:3},
+{q:"デュプレックスシステムとデュアルシステムの違いは？",a:"デュプレックス：主系と待機系の2系統で、主系障害時に待機系に切り替え（信頼性目的）。デュアル：2系統が常時並列稼働して照合し合う（高精度・高信頼目的）",s:3},
+{q:"ホットスタンバイ・ウォームスタンバイ・コールドスタンバイの違いは？",a:"ホットスタンバイ：電源ON・即時切替可能。ウォームスタンバイ：電源ON（スリープ）・準備に少し時間要。コールドスタンバイ：電源OFF・起動に時間要（最も低コスト）",s:3},
+{q:"スケールアウトとスケールアップの違いは？それぞれ向いている用途は？",a:"スケールアウト：台数を増やして処理能力向上→Web系・高可用性が必要なシステム。スケールアップ：1台のスペックを上げる→DB系・垂直スケーリングが有効なシステム",s:3},
+{q:"レプリケーションの同期方式と非同期方式の違いは？",a:"同期方式：変更があった瞬間にリアルタイムで複製（整合性○・性能×）。非同期方式：バッチ処理で定期的に複製（整合性△・性能○）",s:2}
+]},
+{title:"SHEET 12｜セキュリティ",cards:[
+{q:"情報セキュリティの3要素（CIA）を答えよ。",a:"機密性（Confidentiality）・完全性（Integrity）・可用性（Availability）",s:3},
+{q:"共通鍵暗号方式と公開鍵暗号方式を「鍵の種類・速度・鍵配送問題」で比較せよ。",a:"共通鍵：同じ鍵で暗号化・復号→速い・鍵配送問題あり。公開鍵：公開鍵で暗号化・秘密鍵で復号→遅い・鍵配送問題なし",s:3},
+{q:"AESとDESの違いは？現在推奨されているのはどちらか？",a:"DESは旧式の共通鍵暗号方式で現在は脆弱。AESはDESの強化版で現在推奨",s:3},
+{q:"公開鍵暗号方式で「暗号化に使う鍵」と「復号に使う鍵」はどちらか？",a:"暗号化：受信者の公開鍵。復号：受信者の秘密鍵",s:3},
+{q:"ハイブリッド暗号（セッション鍵方式）はなぜ必要か？",a:"公開鍵暗号は安全だが遅い。共通鍵暗号は速いが鍵配送が問題。両者を組み合わせることで速度と安全性を両立（SSL/TLSで採用）",s:3},
+{q:"デジタル署名が「改ざん検知」と「本人確認」の両方をできる理由は？",a:"送信者の秘密鍵で署名→受信者が送信者の公開鍵で検証。秘密鍵は本人しか持たないため本人確認に、ハッシュ値の一致確認で改ざん検知ができる",s:3},
+{q:"SSL（TLS）で使われる技術を3つ答えよ。",a:"共通鍵暗号・公開鍵暗号・デジタル署名（の組み合わせ）",s:3},
+{q:"無線LANの暗号化方式を強度の弱い順に並べよ。",a:"WEP（最弱・現在使用非推奨）→WPA→WPA2（現在推奨）",s:3},
+{q:"WPA2でWEPより強い理由を2点答えよ。",a:"①TKIP：一定時間ごとに暗号鍵を変更する②CCMP：AESを元にした強力な暗号化方式を採用",s:3},
+{q:"ファイアウォールとIDS・IPSの役割の違いは？",a:"ファイアウォール：パケットフィルタリングで不正な通信を遮断（門番）。IDS：不審なアクセスを検知して通知するだけ。IPS：不審なアクセスを検知して自動ブロック",s:3},
+{q:"DMZ（非武装地帯）を設置する目的は何か？",a:"外部からアクセスが必要なWebサーバ・メールサーバを、内部ネットワークと分離された中間領域（DMZ）に置くことで、外部からの攻撃が内部ネットワークに直接届かないようにする",s:3},
+{q:"プロキシサーバの3つの機能を答えよ。",a:"①代理アクセス（内部ユーザーのIPアドレスを隠蔽）②キャッシュによる高速化③URLフィルタリング（有害サイトのブロック）",s:3},
+{q:"ゼロデイ攻撃が危険な理由は？",a:"脆弱性に対するパッチ（修正プログラム）が未公開・未適用の段階で攻撃されるため、防御手段がない状態で被害を受ける",s:3},
+{q:"標的型攻撃メールと一般的なスパムメールの違いは？",a:"標的型攻撃メールは特定の組織・個人を狙い、関係者を装って精巧に作られたウイルスメール。スパムは不特定多数への大量送信",s:3},
+{q:"ソーシャルエンジニアリングの特徴は？技術的攻撃との違いは？",a:"情報通信技術を使わず、人間の心理・行動の隙を突いてIDやパスワードを盗む。技術的な防御策（ファイアウォール等）では防ぎにくい",s:3},
+{q:"認証方式のうち「二要素認証」が強い理由は？",a:"知識要素（パスワード）・所持要素（ハードウェアトークン等）・生体要素の中から2種類を組み合わせるため、一方が漏洩しても不正ログインを防げる",s:3},
+{q:"バイオメトリクス認証・チャレンジレスポンス認証・リスクベース認証をそれぞれ説明せよ。",a:"バイオメトリクス：指紋・虹彩など生体情報で認証。チャレンジレスポンス：サーバが乱数を送りクライアントが加工して返す（パスワードが盗聴されにくい）。リスクベース：平常と異なる行動パターンを検知したときに追加認証を要求",s:3},
+{q:"ゼロトラストの考え方とは？従来の境界防御型との違いは？",a:"「内部にいるから安全」という前提を排除し、すべてのユーザー・機器・通信を都度検証・認証する。従来の境界防御型はファイアウォールで外部と内部を分けて内部は信頼していた",s:3},
+{q:"SIEMとは何か？IDS・IPSとの違いは？",a:"SIEM：複数の機器・ソフトのログを一元収集・分析し、セキュリティ脅威を包括的に検知する。IDS・IPSは個別の通信を監視するのに対し、SIEMはシステム全体のログを統合的に分析する",s:2}
+]},
+{title:"SHEET 13｜ソフトウェア開発",cards:[
+{q:"ウォーターフォールモデルのメリットとデメリットを答えよ。",a:"メリット：工程が明確でプロジェクト管理しやすい。デメリット：前の工程に戻れないため要件変更への柔軟性に欠ける",s:3},
+{q:"プロトタイプモデルはどんな状況で有効か？",a:"要件が不明確で、ユーザーが完成イメージを掴みにくい小規模開発。試作品をユーザーに評価させることで早期に要件を確定できる",s:3},
+{q:"スパイラルモデルはウォーターフォールとプロトタイプのどちらの要素も持つ。その特徴は？",a:"複数のサブシステムごとにウォーターフォールの工程を繰り返す。リスクが高い部分から段階的に開発できる",s:2},
+{q:"エボリューショナルモデルとラウンドトリップモデルの違いは？",a:"エボリューショナルモデルは顧客要求の変化を前提に簡単なものから拡大する反復型。ラウンドトリップモデルは分析・設計・実装の工程を行き来しながらトライ＆エラーで完成させる",s:2},
+{q:"POA・DOA・OOAのそれぞれが使う主要な図は？",a:"POA：DFD（データフローダイアグラム）。DOA：ER図（エンティティ・リレーションシップ図）。OOA：UML（ユースケース図・クラス図等）",s:3},
+{q:"UMLの「ユースケース図」「シーケンス図」「クラス図」「ステートマシン図」「アクティビティ図」を1行で説明せよ。",a:"ユースケース図：ユーザーとシステムのやり取りを記述。シーケンス図：メッセージのやり取りを時系列に表現。クラス図：システムの概念・関係を記述。ステートマシン図：状態遷移を表現。アクティビティ図：フローチャートのUML版",s:3},
+{q:"マッシュアップの具体例を答えよ。",a:"Google Mapに地域情報や天気情報を組み合わせて新しいサービスを提供する等",s:1},
+{q:"SOAとは何か？マイクロサービスとの関係は？",a:"ソフトウェアの機能を「サービス」という独立した部品に分割し、組み合わせてシステムを構築するアーキテクチャ。マイクロサービスはSOAをより細粒度にした現代的な実装方式",s:2}
+]},
+{title:"SHEET 14｜アジャイル開発・テスト",cards:[
+{q:"アジャイル開発の4つの価値を答えよ。",a:"①プロセスやツールより人②文書より動くプログラム③契約上の交渉より協調④計画より変化への対応",s:3},
+{q:"XP（エクストリームプログラミング）の5つの基本原則を答えよ。",a:"①素早いフィードバック②単純さの採用③インクリメンタルな変更④変化を取り込む⑤質の高い作業",s:3},
+{q:"XPのプラクティスのうち「テスト駆動開発」とは何か？",a:"プログラムを書く前にテストケースを作成し、テストが通るようにプログラムを書く手法。バグの早期発見と設計品質向上が目的",s:3},
+{q:"スクラムの「スプリント」とは何か？「スプリントレビュー」は何をするか？",a:"スプリント：一定期間（1〜4週間）の開発イテレーション。スプリントレビュー：スプリント終了時に関係者へ作業結果を提示し、フィードバックをもらう場",s:3},
+{q:"アジャイル開発のその他の手法（FDD・LSD・クリスタル）を1行で説明せよ。",a:"FDD（フィーチャー駆動開発）：ユーザー機能価値を重視。LSD（リーンソフトウェア開発）：ムダをそぎ落とした開発。クリスタル：複数の開発手法の集合体でチーム規模に応じた選択",s:2},
+{q:"ホワイトボックステストとブラックボックステストの違いは？それぞれ誰が担当するか？",a:"ホワイトボックステスト：内部の論理構造（コード）をチェック→開発者が担当。ブラックボックステスト：入力と出力の結果に着目・内部構造は見ない→利用者側・テスト担当者が担当",s:3},
+{q:"テストの工程を順番に答えよ。主体者の移り変わりは？",a:"単体テスト→結合テスト→システムテスト→受入テスト（UAT）→運用テスト。開発者から徐々にユーザー・利用者側が主体者になる",s:3},
+{q:"トップダウンテストで「スタブ」が必要な理由は？ボトムアップテストで「ドライバ」が必要な理由は？",a:"トップダウンテスト：下位モジュールが未完成のため、代替の「スタブ」で代用。ボトムアップテスト：上位モジュールが未完成のため、呼び出し元となる「ドライバ」で代用",s:3},
+{q:"レグレッションテスト（回帰テスト）はいつ行うか？",a:"システムのどこかを修正・変更したとき、その修正が他の箇所に影響を与えていないかを確認するために行う",s:3},
+{q:"A/Bテスト・ペネトレーションテスト・アルファテスト・ベータテストを1行で区別せよ。",a:"A/Bテスト：複数デザインの効果を比較検証。ペネトレーションテスト：実際に侵入を試みて脆弱性を検査。アルファテスト：社内関係者による致命的欠陥の発見テスト。ベータテスト：発売前に外部ユーザーへ提供して評価してもらうテスト",s:3},
+{q:"ウォークスルーとインスペクションの違いは？",a:"ウォークスルー：作成者自身がレビュアーに成果物を説明してコメントを求める非公式なレビュー。インスペクション：外部も含めた公式なレビュー（モデレータが管理）",s:2},
+{q:"DevOpsとは何か？ウォーターフォール開発との本質的な違いは？",a:"開発（Dev）と運用（Ops）を連携・協力させ、より迅速かつ継続的に価値を提供するアプローチ。ウォーターフォールでは開発と運用が分断されているのに対し、DevOpsでは継続的インテグレーション・継続的デリバリーで連携する",s:3}
+]},
+{title:"SHEET 15｜開発管理",cards:[
+{q:"PMBOKとBABOKの違いは？",a:"PMBOK：プロジェクトマネジメントの標準フレームワーク（12の原則・8のパフォーマンスドメイン）。BABOK：ビジネス分析のためのタスク・テクニック集（4つの要求・6つの知識領域）",s:3},
+{q:"WBSとガントチャートの役割の違いは？",a:"WBS：作業をトップダウンで階層的に分解して洗い出す（作業の定義）。ガントチャート：各作業の日程・進捗を時間軸で管理する（スケジュール管理）",s:3},
+{q:"RFI・RFP・RFQの発注フローにおける順序と役割は？",a:"RFI（情報提供依頼）→RFP（提案依頼）→RFQ（見積依頼）の順。RFIで技術・実績確認→RFPで具体的提案→RFQで価格確認",s:3},
+{q:"EVMのSPIが1.0未満の場合、プロジェクトはどんな状態か？",a:"スケジュールが遅延している（SPI＝EV/PV。1.0未満は計画より進捗が遅い）",s:3},
+{q:"EVMのCPIが1.0未満の場合、プロジェクトはどんな状態か？",a:"コストが超過している（CPI＝EV/AC。1.0未満は計画より費用がかかっている）",s:3},
+{q:"EACの計算式を答えよ。変数の意味も説明せよ。",a:"EAC ＝ AC ＋（BAC－EV）÷ CPI。AC：コスト実績値。BAC：計画時総コスト予算。EV：出来高実績値。CPI：コスト効率指数",s:3},
+{q:"非機能要求の6要素を答えよ。",a:"①可用性②性能・拡張性③運用・保守性④移行性⑤セキュリティ⑥システム環境・エコロジー",s:3},
+{q:"SLAの「目標保証型」と「努力目標型」の違いは？",a:"目標保証型：事前に合意したサービスレベルを保証（未達時にペナルティ等）。努力目標型：事前に合意したレベルは努力義務（ベストエフォート）",s:2},
+{q:"ファンクションポイント法とLOC法（プログラムステップ法）の違いは？",a:"ファンクションポイント法：機能の数・複雑さに基づく見積り（使用言語に依存しない）。LOC法：プログラムの行数に基づく見積り（言語に依存する）",s:3},
+{q:"COCOMO法の特徴は？使用言語への依存性はあるか？",a:"予想プログラム行数×補正係数で見積る統計的手法。使用するプログラム言語に依存しない",s:2},
+{q:"ボトムアップ法のメリットとデメリットは？",a:"メリット：成果物・作業を細分化して積み上げるため精度が高い。デメリット：設計・計画が進まないと使えない（プロジェクト早期には不向き）",s:2},
+{q:"CMMIの5つの成熟度レベルを順番に答えよ。",a:"レベル1：初期→レベル2：管理された→レベル3：定義された→レベル4：定量的に管理された→レベル5：最適化している",s:3}
+]},
+{title:"SHEET 16｜経営情報管理",cards:[
+{q:"ITアウトソーシングの3つのメリットは？",a:"①IT人材不足への対応②キャッシュフローの改善（固定費の変動費化）③コアコンピタンスへの経営資源集中",s:3},
+{q:"IaaS・PaaS・SaaSで「アプリケーション」を誰が管理するか？",a:"IaaS：自社管理。PaaS：自社管理。SaaS：クラウド事業者が管理",s:3},
+{q:"IaaSとPaaSの違いは何か？ミドルウェアの管理者に着目して答えよ。",a:"IaaS：ミドルウェアも自社管理。PaaS：ミドルウェアはクラウド事業者が管理（自社はアプリのみ）",s:3},
+{q:"CaaSとは何か？PaaSとの違いは？",a:"CaaS（Container as a Service）はコンテナ実行環境を提供するサービス。PaaSより低いレイヤー（OS/コンテナ層）を提供する",s:2},
+{q:"コロケーション・ホスティング・SaaSを「自社が管理する範囲」で比較せよ。",a:"コロケーション：施設のみ提供→サーバ・アプリは自社管理。ホスティング：施設＋サーバを提供→アプリは自社管理。SaaS：施設＋サーバ＋アプリすべて提供→自社管理は原則なし",s:3},
+{q:"パブリッククラウドとプライベートクラウドのセキュリティ・コストの違いは？",a:"パブリック：コスト低・不特定多数と共有するためセキュリティリスクあり。プライベート：コスト高・自社専用なのでセキュリティ管理しやすい",s:3},
+{q:"ハイブリッドクラウドとコミュニティクラウドの違いは？",a:"ハイブリッドクラウド：パブリックとプライベートを組み合わせて使う。コミュニティクラウド：特定の業種や組織グループに限定して提供されるクラウド",s:2},
+{q:"PUEの計算式と、値が小さい場合の意味は？",a:"PUE ＝ データセンター全体の消費電力 ÷ IT機器の消費電力。値が1.0に近いほど電力効率が高い（最高効率はPUE＝1.0）",s:3},
+{q:"エッジコンピューティングの目的は？クラウドコンピューティングとの違いは？",a:"デバイスの近くでデータ処理を行い、クラウドへの通信負荷・レイテンシを低減する。クラウドはすべてのデータを遠隔のデータセンターで処理する",s:3},
+{q:"ERPとEAIの違いは？",a:"ERP：財務・物流・生産など複数の業務システムを1つに統合するパッケージソフト（データを一元管理）。EAI：既存の別々のシステムを仮想的に1つに見せる統合技術（既存システムの連携）",s:3},
+{q:"EAの4つのアーキテクチャを答えよ。",a:"①ビジネスアーキテクチャ（業務・業務フロー）②データアーキテクチャ（データ構造）③アプリケーションアーキテクチャ（情報システム）④テクノロジーアーキテクチャ（技術基盤）",s:3},
+{q:"リスクコントロールとリスクファイナンスに含まれる対策を分類せよ。",a:"リスクコントロール（損失最小化）：リスク回避・リスク低減。リスクファイナンス（金銭的対処）：リスク保有・リスク共有（分散・移転＝保険等）",s:3},
+{q:"CVRとチャーンレートの計算対象の違いは？",a:"CVR（コンバージョン率）：サイト訪問者のうち成果（購入・登録等）に至った割合。チャーンレート（解約率）：契約しているユーザーのうちサービスを解約した割合",s:3},
+{q:"LTVと平均継続期間の計算式を答えよ。",a:"平均継続期間 ＝ 1 ÷ 解約率。LTV ＝ 顧客・期間当たり平均利益 × 平均継続期間\n例：解約率10%、月次利益5000円 → 平均継続期間10か月 → LTV＝50,000円",s:3}
+]},
+{title:"SHEET 17｜Web利用・その他IT",cards:[
+{q:"クローラと検索エンジンの関係は？クローラの別名は？",a:"クローラはWebページを巡回してデータを収集し検索エンジンのDBに登録するプログラム。スパイダー・ボットとも呼ぶ",s:2},
+{q:"ホワイトハットSEOとブラックハットSEOの違いと、それぞれのリスクは？",a:"ホワイトハット：検索エンジンのガイドライン準拠の正当な手法。ブラックハット：アルゴリズムを悪用して検索順位を操作→ペナルティでサイトが除外されるリスクあり",s:2},
+{q:"フィルターバブルとはどんな問題か？",a:"パーソナライズアルゴリズムにより、過去の検索・閲覧履歴に沿った情報ばかりが表示され、異なる意見・情報に触れにくくなる問題",s:3},
+{q:"IoTとM2Mを「人間の関与」の観点で比較せよ。",a:"IoT：人間とモノの双方向のデータ交換を含む広い概念。M2M：機械同士が自律的にデータを交換し、人間が介在しない通信",s:3},
+{q:"RPAが得意な業務の特徴は？AIとの違いは？",a:"ルールが明確で反復性の高いPC操作業務（データ入力・転記等）が得意。AIは判断・学習を伴う業務。RPAはルールベースの自動化",s:3},
+{q:"AR（拡張現実）とVR（仮想現実）の違いを具体例で答えよ。",a:"AR：現実の映像にバーチャル情報を重ねる（例：ポケモンGO）。VR：完全に仮想の空間を体験させる（例：VRゴーグルでの仮想空間）",s:3},
+{q:"機械学習の「教師あり学習」「教師なし学習」「強化学習」の違いは？",a:"教師あり学習：正解データ（ラベル）を使って学習。教師なし学習：正解データなし・データの構造・パターンを自ら発見。強化学習：報酬・ペナルティを与えながら最適な行動を学習",s:3},
+{q:"ディープラーニングと機械学習の関係は？",a:"ディープラーニングは機械学習の手法の1つ。多層のニューラルネットワークを使い、特徴量の抽出も自動化する（従来の機械学習は人間が特徴量を設計する必要がある）",s:3},
+{q:"ブロックチェーンのデータ改ざんが困難な理由は？",a:"データを分散して複数のノードに記録し、各ブロックが前のブロックのハッシュ値を持つため、1箇所を書き換えても他のノードとの矛盾が発生し、改ざんが検出される",s:3},
+{q:"NFTとブロックチェーンの関係は？",a:"NFT（非代替性トークン）はブロックチェーン上に記録された一意で代替不可能なデジタルトークン。デジタルアート等の所有権の証明に使われる",s:2},
+{q:"Web3とは何か？Web2.0との違いは？",a:"Web3はブロックチェーンを基盤とする分散型インターネット（特定企業に依存しない）。Web2.0はGAFAのような中央集権的なプラットフォーム企業がデータを集中管理する",s:2},
+{q:"TCOの構成要素は？初期費用だけではない理由は？",a:"TCO（Total Cost of Ownership）はハード・ソフト購入費（初期費用）だけでなく、運用・保守・サポート・教育・廃棄費用等も含む全体費用。IT投資判断には初期費用だけでなくTCO全体で評価すべき",s:3},
+{q:"インダストリー4.0とは何か？どの国が推進しているか？",a:"製造業のデジタル化・IoT/AI活用による「第4次産業革命」を目指す概念。ドイツが主導",s:2}
+]}
+];
+
+/* ════════════════════════════════
+   STATE
+════════════════════════════════ */
+let S={ch:-1,ix:0,fl:false,mode:'all',diff:'all',rs:{}};
+
+function ld(){try{const s=localStorage.getItem('johou_v2');if(s)S.rs=JSON.parse(s)}catch(e){}}
+function sv(){try{localStorage.setItem('johou_v2',JSON.stringify(S.rs))}catch(e){}}
+function gk(c,q){return c+'.'+q}
+function gr(c,q){return S.rs[gk(c,q)]||0}
+function sr(c,q,v){S.rs[gk(c,q)]=v;sv()}
+
+/* ── card filtering ── */
+function gc(){
+  if(S.ch===-1)return[];
+  let cs=D[S.ch].cards.map((c,i)=>({...c,i}));
+  if(S.diff!=='all')cs=cs.filter(c=>c.s===parseInt(S.diff));
+  if(S.mode==='w')cs=cs.filter(c=>gr(S.ch,c.i)===-1);
+  if(S.mode==='u')cs=cs.filter(c=>gr(S.ch,c.i)===0);
+  if(S.mode==='s'){cs=[...cs];for(let i=cs.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[cs[i],cs[j]]=[cs[j],cs[i]]}}
+  return cs;
+}
+
+/* ── stats ── */
+function chs(ci){
+  const ch=D[ci];let ok=0,ng=0,t=ch.cards.length;
+  ch.cards.forEach((_,qi)=>{const r=gr(ci,qi);if(r===1)ok++;if(r===-1)ng++});
+  return{ok,ng,u:t-ok-ng,t};
+}
+function all(){
+  let ok=0,ng=0,t=0;
+  D.forEach((_,ci)=>{const s=chs(ci);ok+=s.ok;ng+=s.ng;t+=s.t});
+  return{ok,ng,t,u:t-ok-ng};
+}
+
+/* ── star label ── */
+function sl(s){
+  if(s===3)return'<span class="star-badge s3b">★★★</span>';
+  if(s===2)return'<span class="star-badge s2b">★★</span>';
+  return'<span class="star-badge s1b">★</span>';
+}
+
+/* ════════════════════════════════
+   RENDER
+════════════════════════════════ */
+function R(){document.getElementById('app').innerHTML=S.ch===-1?renderHome():renderQ()}
+
+function renderHome(){
+  const a=all();const p=a.t?Math.round(a.ok/a.t*100):0;
+  let h='<div class="header">'
+    +'<h1>情報システム <span>一問一答</span></h1>'
+    +'<div class="sub">中小企業診断士 2025｜SHEET 01〜17｜全'+a.t+'問</div>'
+    +'</div>'
+    +'<div class="pbar-wrap">'
+    +'<span class="lbl" style="color:var(--correct)">'+a.ok+'</span>'
+    +'<div class="pbar"><div class="pbar-fill" style="width:'+p+'%"></div></div>'
+    +'<span class="lbl" style="color:var(--sub)">'+a.t+'</span>'
+    +'</div>'
+    +'<div class="ch-list">';
+  D.forEach(function(ch,ci){
+    var s=chs(ci);var p2=s.t?Math.round(s.ok/s.t*100):0;
+    h+='<div class="ch-item" onclick="sc('+ci+')">'
+      +'<div class="ch-name">'+ch.title+'</div>'
+      +'<div class="ch-meta">'
+      +'<span class="ch-score">'+s.ok+'/'+s.t+'</span>'
+      +'<div class="ch-bar"><div class="ch-bar-fill" style="width:'+p2+'%"></div></div>'
+      +'</div></div>';
+  });
+  h+='</div><button class="reset-btn" onclick="ra()">学習記録をリセット</button>';
+  return h;
+}
+
+function renderQ(){
+  var ch=D[S.ch];var s=chs(S.ch);var p=s.t?Math.round(s.ok/s.t*100):0;
+  var cards=gc();
+  var title=ch.title.replace(/SHEET \d+[|｜]/,'');
+
+  var h='<div class="sub-header">'
+    +'<button class="nav-back" onclick="gh()">← 戻る</button>'
+    +'<div class="sub-title">'+title+'</div>'
+    +'<span class="count-badge">'+s.ok+'/'+s.t+'</span>'
+    +'</div>'
+    +'<div class="pbar-wrap" style="padding:4px 0">'
+    +'<span class="lbl" style="color:var(--correct);font-size:10px">'+s.ok+'</span>'
+    +'<div class="pbar"><div class="pbar-fill" style="width:'+p+'%"></div></div>'
+    +'<span class="lbl" style="color:var(--sub);font-size:10px">'+s.t+'</span>'
+    +'</div>'
+    +'<div class="mode-bar">'
+    +'<button class="mode-btn '+(S.mode==='all'?'active':'')+'" onclick="setMode('all')">全て('+s.t+')</button>'
+    +'<button class="mode-btn '+(S.mode==='u'?'active':'')+'" onclick="setMode('u')">未習('+s.u+')</button>'
+    +'<button class="mode-btn '+(S.mode==='w'?'active':'')+'" onclick="setMode('w')">苦手('+s.ng+')</button>'
+    +'<button class="mode-btn '+(S.mode==='s'?'active':'')+'" onclick="setMode('s')">シャッフル</button>'
+    +'</div>'
+    +'<div class="diff-bar">'
+    +'<button class="diff-btn dall '+(S.diff==='all'?'active':'')+'" onclick="setDiff('all')">全★</button>'
+    +'<button class="diff-btn d3 '+(S.diff==='3'?'active':'')+'" onclick="setDiff('3')">★★★</button>'
+    +'<button class="diff-btn d2 '+(S.diff==='2'?'active':'')+'" onclick="setDiff('2')">★★</button>'
+    +'<button class="diff-btn d1 '+(S.diff==='1'?'active':'')+'" onclick="setDiff('1')">★</button>'
+    +'</div>';
+
+  if(!cards.length){
+    var emsg=S.mode==='w'?'苦手な問題はありません':S.mode==='u'?'全問学習済みです':'この難易度の問題はありません';
+    h+='<div class="empty">'+emsg+'</div>'
+      +'<div class="nav"><button class="nav-btn" onclick="gh()">← 戻る</button></div>';
+    return h;
+  }
+  if(S.ix>=cards.length)S.ix=0;
+  var cd=cards[S.ix];
+
+  h+='<div class="card-wrap">'
+    +'<div class="card '+(S.fl?'flipped':'')+'" onclick="fp()">'
+    +'<div class="card-face card-front">'
+    +'<div class="card-no">'+(S.ix+1)+' / '+cards.length+'</div>'
+    +'<div class="card-label">QUESTION '+sl(cd.s)+'</div>'
+    +'<div class="card-q">'+cd.q+'</div>'
+    +'<div class="card-hint">タップで解答を表示</div>'
+    +'</div>'
+    +'<div class="card-face card-back">'
+    +'<div class="card-no">'+(S.ix+1)+' / '+cards.length+'</div>'
+    +'<div class="card-a-label">ANSWER</div>'
+    +'<div class="card-a">'+cd.a.replace(/\n/g,'<br>')+'</div>'
+    +'</div>'
+    +'</div></div>';
+
+  if(S.fl){
+    h+='<div class="actions">'
+      +'<button class="act-btn btn-wrong" onclick="judge(-1)">✕ 不正解</button>'
+      +'<button class="act-btn btn-skip" onclick="judge(0)">△ 微妙</button>'
+      +'<button class="act-btn btn-ok" onclick="judge(1)">○ 正解</button>'
+      +'</div>';
+  }
+
+  var flipLabel=S.fl?'次へ':'解答表示';
+  h+='<div class="nav">'
+    +'<button class="nav-btn" onclick="prev()">◀ 前</button>'
+    +'<button class="nav-btn primary" onclick="fp()">'+flipLabel+'</button>'
+    +'<button class="nav-btn" onclick="next()">次 ▶</button>'
+    +'</div>';
+  return h;
+}
+
+/* ════════════════════════════════
+   ACTIONS
+════════════════════════════════ */
+function sc(ci){S.ch=ci;S.ix=0;S.fl=false;S.mode='all';S.diff='all';R()}
+function gh(){S.ch=-1;R()}
+function setMode(m){S.mode=m;S.ix=0;S.fl=false;R()}
+function setDiff(d){S.diff=d;S.ix=0;S.fl=false;R()}
+function fp(){S.fl=!S.fl;R()}
+function prev(){S.fl=false;const c=gc();S.ix=(S.ix-1+c.length)%c.length;R()}
+function next(){S.fl=false;const c=gc();S.ix=(S.ix+1)%c.length;R()}
+function judge(v){
+  const c=gc();if(!c.length)return;
+  sr(S.ch,c[S.ix].i,v);
+  S.fl=false;S.ix++;
+  const nc=gc();if(S.ix>=nc.length)S.ix=0;
+  R();
+}
+function ra(){if(confirm('学習記録をすべてリセットしますか？')){S.rs={};sv();R()}}
+
+/* ── swipe ── */
+let tx=0,ty=0;
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY},{passive:true});
+document.addEventListener('touchend',e=>{
+  if(S.ch===-1)return;
+  const dx=e.changedTouches[0].clientX-tx;
+  const dy=e.changedTouches[0].clientY-ty;
+  if(Math.abs(dx)>60&&Math.abs(dy)<40){if(dx>0)prev();else next();}
+},{passive:true});
+
+ld();R();
+</script>
+</body>
+</html>
