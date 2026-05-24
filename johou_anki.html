@@ -4,118 +4,76 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="情報SE暗記">
-<title>情報システム 一問一答｜診断士2025</title>
+<title>情報システム 一問一答 | 診断士2025</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;900&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg:#07090f;--card:#111420;--card2:#181d2e;
-  --accent:#3d7eff;--accent2:#7eb8ff;
-  --correct:#00c9a7;--wrong:#ff5252;--skip:#f5a623;
-  --s3:#ffd700;--s2:#a0b4c8;--s1:#7a8a9a;
-  --text:#eef2ff;--sub:#6a7a9a;--border:#232a40;
-  --glow:rgba(61,126,255,.18)
-}
-body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
-/* bg grid */
-body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(61,126,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(61,126,255,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
-.app{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:env(safe-area-inset-top,12px) 16px 100px}
-
-/* ── HEADER ── */
+:root{--bg:#07090f;--card:#111420;--accent:#3d7eff;--accent2:#7eb8ff;--correct:#00c9a7;--wrong:#ff5252;--skip:#f5a623;--text:#eef2ff;--sub:#6a7a9a;--border:#232a40}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+.app{max-width:480px;margin:0 auto;padding:12px 16px 100px}
 .header{text-align:center;padding:18px 0 10px}
-.header h1{font-size:17px;font-weight:900;letter-spacing:2px;color:var(--text)}
+.header h1{font-size:17px;font-weight:900;letter-spacing:1px}
 .header h1 span{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.header .sub{font-size:10px;color:var(--sub);margin-top:5px;letter-spacing:1px}
-
-/* ── PROGRESS BAR ── */
+.header .sub{font-size:10px;color:var(--sub);margin-top:5px}
 .pbar-wrap{display:flex;align-items:center;gap:10px;padding:8px 0}
 .pbar-wrap .lbl{font-size:11px;font-weight:700;min-width:28px;text-align:center}
 .pbar{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
-.pbar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--correct));transition:width .5s cubic-bezier(.4,0,.2,1)}
-
-/* ── CHAPTER LIST ── */
+.pbar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--correct));transition:width .5s}
 .ch-list{display:grid;gap:7px;margin:10px 0}
-.ch-item{padding:13px 15px;background:var(--card);border-radius:12px;border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:.18s;position:relative;overflow:hidden}
-.ch-item::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,var(--glow),transparent);opacity:0;transition:.2s}
-.ch-item:active::before{opacity:1}
+.ch-item{padding:13px 15px;background:var(--card);border-radius:12px;border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;cursor:pointer}
 .ch-item:active{transform:scale(.98)}
 .ch-name{font-size:12px;font-weight:700;flex:1;line-height:1.4}
 .ch-meta{display:flex;align-items:center;gap:8px;flex-shrink:0}
 .ch-score{font-size:11px;color:var(--sub);font-weight:600}
 .ch-bar{width:50px;height:3px;background:var(--border);border-radius:2px;overflow:hidden}
-.ch-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--correct));border-radius:2px;transition:width .4s}
-
-/* ── STAR BADGE ── */
-.star-badge{font-size:9px;font-weight:900;padding:2px 5px;border-radius:4px;margin-left:4px}
-.s3b{background:rgba(255,215,0,.15);color:var(--s3);border:1px solid rgba(255,215,0,.3)}
-.s2b{background:rgba(160,180,200,.12);color:var(--s2);border:1px solid rgba(160,180,200,.25)}
-.s1b{background:rgba(122,138,154,.1);color:var(--s1);border:1px solid rgba(122,138,154,.2)}
-
-/* ── CARD AREA ── */
-.card-wrap{perspective:1400px;margin:14px 0;animation:fadeIn .28s ease}
-@keyframes fadeIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+.ch-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--correct));border-radius:2px}
+.card-wrap{perspective:1400px;margin:14px 0;animation:fi .28s ease}
+@keyframes fi{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
 .card{position:relative;width:100%;min-height:260px;cursor:pointer;transform-style:preserve-3d;transition:transform .48s cubic-bezier(.4,0,.2,1)}
 .card.flipped{transform:rotateY(180deg)}
 .card-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:14px;padding:22px 18px;display:flex;flex-direction:column;justify-content:center}
-/* front */
 .card-front{background:linear-gradient(145deg,#141828,#0f1420);border:1px solid var(--border)}
-.card-front::after{content:'';position:absolute;inset:0;border-radius:14px;background:radial-gradient(ellipse at 30% 20%,rgba(61,126,255,.06),transparent 60%);pointer-events:none}
-.card-label{font-size:9px;font-weight:900;letter-spacing:3px;margin-bottom:10px;color:var(--accent2)}
-.card-q{font-size:14px;line-height:1.75;font-weight:600}
-.card-hint{position:absolute;bottom:14px;right:16px;font-size:9px;color:var(--sub);letter-spacing:.5px}
-.card-no{position:absolute;top:14px;right:16px;font-size:10px;color:var(--sub);font-weight:700}
-/* back */
 .card-back{background:linear-gradient(145deg,#0c1a15,#0f1c18);border:1px solid rgba(0,201,167,.22);transform:rotateY(180deg)}
-.card-back::after{content:'';position:absolute;inset:0;border-radius:14px;background:radial-gradient(ellipse at 70% 80%,rgba(0,201,167,.06),transparent 60%);pointer-events:none}
-.card-a-label{font-size:9px;font-weight:900;letter-spacing:3px;margin-bottom:10px;color:var(--correct)}
-.card-a{font-size:13px;line-height:1.85;font-weight:500}
-
-/* ── ACTION BUTTONS ── */
+.card-no{position:absolute;top:14px;right:16px;font-size:10px;color:var(--sub);font-weight:700}
+.lbl-q{font-size:9px;font-weight:900;letter-spacing:3px;margin-bottom:10px;color:var(--accent2)}
+.lbl-a{font-size:9px;font-weight:900;letter-spacing:3px;margin-bottom:10px;color:var(--correct)}
+.card-q{font-size:14px;line-height:1.75;font-weight:600}
+.card-hint{position:absolute;bottom:14px;right:16px;font-size:9px;color:var(--sub)}
+.card-a{font-size:13px;line-height:1.85}
+.star{font-size:9px;font-weight:900;padding:2px 5px;border-radius:4px;margin-left:4px;vertical-align:middle}
+.s3{background:rgba(255,215,0,.15);color:#ffd700;border:1px solid rgba(255,215,0,.3)}
+.s2{background:rgba(160,180,200,.12);color:#a0b4c8;border:1px solid rgba(160,180,200,.25)}
+.s1{background:rgba(122,138,154,.1);color:#7a8a9a;border:1px solid rgba(122,138,154,.2)}
 .actions{display:flex;gap:8px;margin:12px 0}
-.act-btn{flex:1;padding:13px 6px;border:none;border-radius:11px;font-size:12px;font-weight:700;cursor:pointer;transition:.18s;font-family:inherit;-webkit-appearance:none;letter-spacing:.5px}
+.act-btn{flex:1;padding:13px 6px;border:none;border-radius:11px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
 .act-btn:active{transform:scale(.95)}
 .btn-wrong{background:rgba(255,82,82,.12);color:var(--wrong);border:1px solid rgba(255,82,82,.28)}
 .btn-skip{background:rgba(245,166,35,.1);color:var(--skip);border:1px solid rgba(245,166,35,.25)}
 .btn-ok{background:rgba(0,201,167,.12);color:var(--correct);border:1px solid rgba(0,201,167,.28)}
-
-/* ── MODE FILTER ── */
 .mode-bar{display:flex;gap:5px;flex-wrap:wrap;margin:6px 0}
-.mode-btn{padding:5px 11px;border-radius:14px;font-size:10px;font-weight:700;background:var(--card);border:1px solid var(--border);color:var(--sub);cursor:pointer;transition:.18s;-webkit-appearance:none;font-family:inherit}
-.mode-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 0 10px rgba(61,126,255,.35)}
-
-/* ── DIFFICULTY FILTER ── */
-.diff-bar{display:flex;gap:5px;margin:4px 0 8px}
-.diff-btn{padding:4px 10px;border-radius:12px;font-size:10px;font-weight:700;border:1px solid var(--border);color:var(--sub);cursor:pointer;background:var(--card);transition:.18s;font-family:inherit;-webkit-appearance:none}
-.diff-btn.d3.active{background:rgba(255,215,0,.15);color:var(--s3);border-color:rgba(255,215,0,.4)}
-.diff-btn.d2.active{background:rgba(160,180,200,.12);color:var(--s2);border-color:rgba(160,180,200,.3)}
-.diff-btn.d1.active{background:rgba(122,138,154,.1);color:var(--s1);border-color:rgba(122,138,154,.25)}
-.diff-btn.dall.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-
-/* ── NAV ── */
-.nav{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:center;gap:7px;padding:10px 16px calc(env(safe-area-inset-bottom,8px)+8px);background:linear-gradient(transparent,var(--bg) 35%);z-index:10}
-.nav-btn{padding:8px 18px;border-radius:20px;font-size:11px;font-weight:700;background:var(--card);border:1px solid var(--border);color:var(--sub);cursor:pointer;font-family:inherit;-webkit-appearance:none;transition:.18s}
+.mode-btn,.diff-btn{padding:5px 11px;border-radius:14px;font-size:10px;font-weight:700;background:var(--card);border:1px solid var(--border);color:var(--sub);cursor:pointer;font-family:inherit}
+.diff-btn{padding:4px 10px;border-radius:12px}
+.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.d3on{background:rgba(255,215,0,.15);color:#ffd700;border-color:rgba(255,215,0,.4)}
+.d2on{background:rgba(160,180,200,.12);color:#a0b4c8;border-color:rgba(160,180,200,.3)}
+.d1on{background:rgba(122,138,154,.1);color:#7a8a9a;border-color:rgba(122,138,154,.25)}
+.nav{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:center;gap:7px;padding:10px 16px calc(env(safe-area-inset-bottom,8px)+8px);background:linear-gradient(transparent,var(--bg) 35%)}
+.nav-btn{padding:8px 18px;border-radius:20px;font-size:11px;font-weight:700;background:var(--card);border:1px solid var(--border);color:var(--sub);cursor:pointer;font-family:inherit}
 .nav-btn:active{transform:scale(.95)}
-.nav-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 0 12px rgba(61,126,255,.4)}
-.nav-back{padding:6px 12px;border-radius:10px;font-size:11px;font-weight:700;background:transparent;border:1px solid var(--border);color:var(--sub);cursor:pointer;font-family:inherit;-webkit-appearance:none}
-
-/* ── EMPTY / UTIL ── */
-.empty{text-align:center;padding:50px 20px;color:var(--sub);font-size:13px;line-height:1.8}
-.reset-btn{display:block;margin:24px auto 0;padding:8px 20px;border-radius:10px;font-size:11px;background:transparent;border:1px solid var(--border);color:var(--sub);cursor:pointer;font-family:inherit;-webkit-appearance:none;transition:.18s}
-.reset-btn:hover{border-color:var(--wrong);color:var(--wrong)}
+.pri{background:var(--accent);color:#fff;border-color:var(--accent)}
+.bk{padding:6px 12px;border-radius:10px;font-size:11px;font-weight:700;background:transparent;border:1px solid var(--border);color:var(--sub);cursor:pointer;font-family:inherit}
 .sub-header{display:flex;align-items:center;justify-content:space-between;padding:6px 0 4px}
-.sub-title{font-size:12px;font-weight:700;flex:1;text-align:center;color:var(--text)}
-.count-badge{font-size:10px;color:var(--sub);font-weight:600}
+.sub-title{font-size:12px;font-weight:700;flex:1;text-align:center}
+.cnt{font-size:10px;color:var(--sub);font-weight:600}
+.empty{text-align:center;padding:50px 20px;color:var(--sub);font-size:13px;line-height:1.8}
+.rst{display:block;margin:24px auto 0;padding:8px 20px;border-radius:10px;font-size:11px;background:transparent;border:1px solid var(--border);color:var(--sub);cursor:pointer;font-family:inherit}
 </style>
 </head>
 <body>
 <div class="app" id="app"></div>
 <script>
-/* ════════════════════════════════
-   DATA  –  SHEET 01〜17 全210問
-════════════════════════════════ */
-const D=[
+var D=[
 {title:"SHEET 01｜コンピュータの5大装置",cards:[
 {q:"コンピュータの5大装置を答えよ。",a:"入力装置・出力装置・記憶装置・制御装置・演算装置",s:2},
 {q:"USBハブを介して接続できる最大台数は？",a:"127台",s:2},
@@ -137,7 +95,7 @@ const D=[
 {title:"SHEET 02｜記憶装置",cards:[
 {q:"記憶素子の速度順を答えよ（速い順）。",a:"レジスタ→キャッシュメモリ→主記憶装置（メインメモリ）→補助記憶装置（HDD/SSD）",s:3},
 {q:"レジスタとキャッシュメモリの役割の違いは？",a:"レジスタはCPU内部の演算用超高速記憶素子。キャッシュメモリはCPUとメインメモリの速度差を埋める高速バッファ",s:3},
-{q:"キャッシュメモリの平均アクセス時間の計算式を答えよ。（ヒット率P、キャッシュ時間Tc、メモリ時間Tm）",a:"平均アクセス時間 ＝ Tc × P ＋ Tm × (1－P)\n例：Tc=10ns、Tm=100ns、P=0.9のとき → 10×0.9＋100×0.1 ＝ 19ns",s:3},
+{q:"キャッシュメモリの平均アクセス時間の計算式を答えよ。（ヒット率P、キャッシュ時間Tc、メモリ時間Tm）",a:"平均アクセス時間 ＝ Tc × P ＋ Tm × (1－P)",s:3},
 {q:"SRAMとDRAMで「処理速度」はどちらが速いか？",a:"SRAMが速い",s:3},
 {q:"SRAMとDRAMで「リフレッシュ」が必要なのはどちらか？その理由は？",a:"DRAMが必要。電荷でデータを保持するため、定期的に電荷を補充しないとデータが失われる",s:3},
 {q:"SRAMとDRAMの記憶方式の違いは？",a:"SRAMはフリップフロップ回路で記憶。DRAMは電荷で記憶",s:2},
@@ -149,8 +107,8 @@ const D=[
 {q:"スワッピングとスラッシングの違いは？スラッシングはなぜ問題か？",a:"スワッピングは使用頻度の低いページを補助記憶装置に退避させる正常な動作。スラッシングはスワッピングが頻発してシステム性能が極端に低下した状態",s:3},
 {q:"スラッシングへの対策を2つ答えよ。",a:"①不要なプログラムを停止する②物理メモリを増設する",s:2},
 {q:"デフラグメンテーション（デフラグ）が必要になる原因と効果は？",a:"ファイルの削除・追加を繰り返すとHDD上でデータが断片化するため、それを整理して読み書き速度を改善する",s:2},
-{q:"光学ディスクの規格で繰り返し書き換えができるのは？-ROMと-Rとの違いは？",a:"-ROMは読み取り専用。-Rは一度のみ書き込み可。-RW・-RAMはともに繰り返し書き換え可能",s:2},
-{q:"NASとSANを「接続方式」で比較せよ。",a:"NAS：記憶装置がLANに直接接続。SAN：複数のサーバと記憶装置を専用高速ネットワークで接続",s:3},
+{q:"光学ディスクの規格で、繰り返し書き換えができるのは-RWと-RAMのどちらか？-ROMと-Rとの違いは？",a:"-ROMは読み取り専用。-Rは一度のみ書き込み可。-RW・-RAMはともに繰り返し書き換え可能",s:2},
+{q:"NASとSANを「接続方式」で比較せよ。",a:"NAS（Network Attached Storage）：記憶装置がLANに直接接続。SAN（Storage Area Network）：複数のサーバと記憶装置を専用高速ネットワークで接続",s:3},
 {q:"シンプロビジョニングの目的は？従来型との違いは？",a:"ストレージを仮想化して割り当て、実データの増加に応じて物理容量を増設する。従来型は最初から必要容量を全割り当て",s:2}
 ]},
 {title:"SHEET 03｜ソフトウェア",cards:[
@@ -191,9 +149,9 @@ const D=[
 {q:"データマイニングとデータディクショナリの違いは？",a:"データマイニングは大容量データを解析して隠れた法則・関係性を発見する分析技術。データディクショナリは扱うデータの定義をまとめた一覧（メタデータ管理）",s:2}
 ]},
 {title:"SHEET 06｜データベース",cards:[
-{q:"リレーショナルDBとNoSQLの使い分けは？",a:"リレーショナルDB：構造化データ・高い一貫性が必要な基幹系・会計系。NoSQL：非構造化データ・大量データ・高速処理が必要なビッグデータ・eビジネス系",s:3},
+{q:"リレーショナルDBとNoSQLの使い分けは？",a:"リレーショナルDB：構造化データ・高い一貫性が必要な基幹系・会計系システム。NoSQL：非構造化データ・大量データ・高速処理が必要なビッグデータ・eビジネス系",s:3},
 {q:"RDBの基本3操作を答えよ。それぞれ行・列どちらに作用するか？",a:"選択：条件を満たす行を絞り込む。射影：必要な列を絞り込む。結合：共通の列でテーブルを結合する",s:3},
-{q:"NoSQLの種類を5つ挙げ、それぞれの特徴を1行で答えよ。",a:"①ドキュメント指向DB：文書形式を扱う②カラムナーDB：大量データ集計が得意③キーバリューストア：キーとバリューで紐付ける④グラフ指向DB：グラフ構造でデータ管理⑤オブジェクト指向DB：プログラムが動きやすい設計",s:3},
+{q:"NoSQLの種類を5つ挙げ、それぞれの特徴を1行で答えよ。",a:"①ドキュメント指向DB：XMLなど文書形式を扱う②カラムナーDB：大量データ集計が得意③キーバリューストア：キーとバリューだけで紐付ける④グラフ指向DB：グラフ構造でデータ管理⑤オブジェクト指向DB：プログラムが動きやすい設計",s:3},
 {q:"インメモリデータベースの特徴とトレードオフは？",a:"データをすべてメインメモリ上に格納するため応答時間が短い。ただし揮発性のため障害時のデータ消失リスクがある",s:2},
 {q:"ACID特性の「A（Atomicity）」とは何か？",a:"原子性。トランザクションの処理が「すべて完了」か「すべて未実行」のいずれかになり、途中で止まることがない",s:3},
 {q:"ACID特性の「C（Consistency）」とは何か？",a:"整合性。トランザクション実行後も、データの整合性・一貫性が保たれている",s:3},
@@ -202,18 +160,18 @@ const D=[
 {q:"デッドロックとはどのような状態か？具体例で説明せよ。",a:"複数のトランザクションが互いに相手のロックが解除されるのを待ち合って、処理が永久に進まなくなる状態。例：ユーザーAがDB-aをロックしDB-bの解除待ち、同時にユーザーBがDB-bをロックしDB-aの解除待ちになる",s:3},
 {q:"ロックの粒度が「粗い」場合と「細かい」場合のトレードオフを答えよ。",a:"粒度が粗い：処理負担小・並列実行できるトランザクション数少。粒度が細かい：処理負担大・並列実行できるトランザクション数多",s:3},
 {q:"ロールバックはどんな障害のとき使うか？ロールフォワードは？",a:"ロールバック：軽い障害（トランザクションエラー等）→更新前ログを使って処理を取り消す。ロールフォワード：重い障害（HDD破損等）→バックアップから更新後ログを使って前進復旧",s:3},
-{q:"フルバックアップ・差分バックアップ・増分バックアップを「バックアップ時間」と「復旧時間」で比較せよ。",a:"フルバックアップ：バックアップ時間長い・復旧時間短い。差分：中間・中間。増分：バックアップ時間短い・復旧時間長い",s:3},
+{q:"フルバックアップ・差分バックアップ・増分バックアップを「バックアップ時間」と「復旧時間」で比較せよ。",a:"フルバックアップ：バックアップ時間長い・復旧時間短い。差分バックアップ：中間・中間。増分バックアップ：バックアップ時間短い・復旧時間長い",s:3},
 {q:"三層スキーマの3層を外から順に答えよ。各層の役割は？",a:"外部スキーマ（ユーザーが見るビュー）→概念スキーマ（DB全体の論理構造）→内部スキーマ（物理的な格納方法）",s:3}
 ]},
 {title:"SHEET 07｜データベース操作・モバイル端末",cards:[
 {q:"SQLで「条件を満たす行を取り出す」基本構文を答えよ。",a:"SELECT 列名 FROM 表名 WHERE 条件",s:3},
-{q:"ORDER BYで何も指定しないとき、昇順・降順どちらになるか？",a:"昇順（ASC）がデフォルト",s:3},
-{q:"LIKE演算子で「末尾が"ゴ"の文字列」を抽出するSQL条件式は？",a:"WHERE 列名 LIKE '%ゴ'　（%は任意の文字列を意味する）",s:3},
+{q:"ORDER BYで何も指定しないとき、昇順・降順どちらになるか？",a:"昇順（ASC）が デフォルト",s:3},
+{q:"LIKE演算子で「末尾が\"ゴ\"の文字列」を抽出するSQL条件式は？",a:"WHERE 列名 LIKE '%ゴ'　（%は任意の文字列を意味する）",s:3},
 {q:"IS NULLとIS NOT NULLをどう使い分けるか？",a:"IS NULLは値が空（未入力）の行を抽出。IS NOT NULLは値が入っている行を抽出。「= NULL」は不可",s:2},
 {q:"BETWEEN A AND Bの境界値の扱いは？（A・Bは含まれるか？）",a:"AもBも含む（A以上B以下）",s:3},
 {q:"UNIONは何をするSQL演算子か？重複行の扱いは？",a:"複数のSELECT結果を縦につなげて1つにする。デフォルトで重複行を除去する（重複を残すにはUNION ALL）",s:2},
 {q:"ストアドプロシージャを使うメリットは？",a:"一連のSQL処理をDBMSに保存しておき、1回の呼び出しで実行できる。ネットワーク転送量削減・処理速度向上・セキュリティ強化",s:2},
-{q:"第1正規形・第2正規形・第3正規形の条件を、それぞれ1文で答えよ。",a:"第1正規形：1セルに1つの値（繰り返しグループなし）。第2正規形：主キーの一部への部分依存を排除。第3正規形：主キー以外の項目への推移的依存を排除",s:3},
+{q:"第1正規形・第2正規形・第3正規形の条件を、それぞれ1文で答えよ。",a:"第1正規形：1セルに1つの値（繰り返しグループなし）。第2正規形：主キーの一部への部分依存を排除（複合キー対応）。第3正規形：主キー以外の項目への推移的依存を排除",s:3},
 {q:"MNOとMVNOの違いは？格安SIMはどちらか？",a:"MNO（移動体通信事業者）は自社で回線網を保有し通信サービスを提供。MVNO（仮想移動体通信事業者）は他社の回線を借りてサービスを提供する。格安SIMはMVNO",s:3},
 {q:"BYODとCOPEのリスクの違いは？",a:"BYODは従業員の私物端末を業務利用するため、セキュリティポリシーの徹底が難しい。COPEは企業が端末を貸与するため管理はしやすいが、私的利用ルールの設定が必要",s:3},
 {q:"シャドーITはなぜセキュリティリスクになるか？",a:"企業が把握していない機器・サービスが使われるため、セキュリティポリシーを適用できず、情報漏洩等の事故が起きやすい",s:3},
@@ -256,11 +214,11 @@ const D=[
 {title:"SHEET 11｜システム構成技術",cards:[
 {q:"集中処理と分散処理を「データ一貫性」「拡張性」「障害の影響範囲」で比較せよ。",a:"集中処理：データ一貫性○・拡張性×・障害時は全停止。分散処理：データ一貫性×・拡張性○・障害の影響は限定的",s:3},
 {q:"2層アーキテクチャと3層アーキテクチャの違いは？3層の利点は？",a:"2層：クライアントにアプリ・DB両方の負荷がかかる。3層（プレゼンテーション/アプリケーション/DB）：各層を独立して開発・保守できる",s:3},
-{q:"ホスト型・ハイパーバイザ型・コンテナ型仮想化の違いは？",a:"ホスト型：ホストOS上に仮想化ソフトウェアを動かし、その上にゲストOS。ハイパーバイザ型：ハードウェア上に直接ハイパーバイザを置く（オーバーヘッド小）。コンテナ型：カーネルを共有し軽量・起動速い（Docker等）",s:3},
-{q:"スループット・レスポンスタイム・ターンアラウンドタイムの違いは？",a:"スループット：単位時間あたりの処理量。レスポンスタイム：コンピュータが応答を返すまでの時間。ターンアラウンドタイム（TAT）：ジョブ投入から結果受領までの全体時間",s:3},
+{q:"ホスト型・ハイパーバイザ型・コンテナ型仮想化の違いは？",a:"ホスト型：ホストOS上に仮想化ソフトウェアを動かし、その上にゲストOS。ハイパーバイザ型：ハードウェア上に直接ハイパーバイザを置きゲストOSを動かす（オーバーヘッド小）。コンテナ型：カーネルを共有し軽量・起動速い（Docker等）",s:3},
+{q:"スループット・レスポンスタイム・ターンアラウンドタイムの違いは？",a:"スループット：単位時間あたりの処理量（仕事量の指標）。レスポンスタイム：コンピュータが応答を返すまでの時間。ターンアラウンドタイム（TAT）：ジョブ投入から結果受領までの人間視点の全体時間",s:3},
 {q:"RASISの5つの指標と対応する尺度を答えよ。",a:"Reliability（信頼性）→MTBF。Availability（可用性）→稼働率。Serviceability（保守性）→MTTR。Integrity（完全性）→定量指標なし。Security（安全性）→定量指標なし",s:3},
-{q:"稼働率の計算式を答えよ。",a:"稼働率 ＝ MTBF ÷（MTBF ＋ MTTR）\n例：MTBF=90h、MTTR=10h → 90÷(90+10) ＝ 0.9（90%）",s:3},
-{q:"フォールトトレランス・フェイルセーフ・フェイルソフト・フールプルーフを1行で区別せよ。",a:"フォールトトレランス：障害発生時も稼働継続。フェイルセーフ：故障時に安全側へ動作。フェイルソフト：機能を一部縮退しながら稼働継続。フールプルーフ：誤操作・誤使用ができない設計",s:3},
+{q:"稼働率の計算式を答えよ。",a:"稼働率 ＝ MTBF ÷（MTBF ＋ MTTR）",s:3},
+{q:"フォールトトレランス・フェイルセーフ・フェイルソフト・フールプルーフを1行で区別せよ。",a:"フォールトトレランス：障害発生時も稼働継続（信頼性重視）。フェイルセーフ：故障時に安全側へ動作（例：信号機故障→赤点灯）。フェイルソフト：機能を一部縮退しながら稼働継続（稼働優先）。フールプルーフ：そもそも誤操作・誤使用ができない設計",s:3},
 {q:"フォールトアボイダンスとフォールトマスキングの違いは？",a:"フォールトアボイダンス：障害が発生しないよう予防する。フォールトマスキング：障害が発生しても外部に影響が出ないよう隠蔽する（冗長化等）",s:2},
 {q:"RAID0・RAID1・RAID5の方式と特徴を答えよ。",a:"RAID0：ストライピング（複数ディスクに分散書き込み）→高速化。RAID1：ミラーリング（同じデータを2台に書き込み）→高信頼。RAID5：データ＋パリティを分散→速度と信頼性のバランス",s:3},
 {q:"デュプレックスシステムとデュアルシステムの違いは？",a:"デュプレックス：主系と待機系の2系統で、主系障害時に待機系に切り替え（信頼性目的）。デュアル：2系統が常時並列稼働して照合し合う（高精度・高信頼目的）",s:3},
@@ -285,7 +243,7 @@ const D=[
 {q:"標的型攻撃メールと一般的なスパムメールの違いは？",a:"標的型攻撃メールは特定の組織・個人を狙い、関係者を装って精巧に作られたウイルスメール。スパムは不特定多数への大量送信",s:3},
 {q:"ソーシャルエンジニアリングの特徴は？技術的攻撃との違いは？",a:"情報通信技術を使わず、人間の心理・行動の隙を突いてIDやパスワードを盗む。技術的な防御策（ファイアウォール等）では防ぎにくい",s:3},
 {q:"認証方式のうち「二要素認証」が強い理由は？",a:"知識要素（パスワード）・所持要素（ハードウェアトークン等）・生体要素の中から2種類を組み合わせるため、一方が漏洩しても不正ログインを防げる",s:3},
-{q:"バイオメトリクス認証・チャレンジレスポンス認証・リスクベース認証をそれぞれ説明せよ。",a:"バイオメトリクス：指紋・虹彩など生体情報で認証。チャレンジレスポンス：サーバが乱数を送りクライアントが加工して返す（パスワードが盗聴されにくい）。リスクベース：平常と異なる行動パターンを検知したときに追加認証を要求",s:3},
+{q:"バイオメトリクス認証・チャレンジレスポンス認証・リスクベース認証をそれぞれ説明せよ。",a:"バイオメトリクス：指紋・虹彩など生体情報で認証。チャレンジレスポンス：サーバが乱数（チャレンジ）を送りクライアントが加工して返す（パスワードが盗聴されにくい）。リスクベース：平常と異なる行動パターン（海外からのアクセス等）を検知したときに追加認証を要求",s:3},
 {q:"ゼロトラストの考え方とは？従来の境界防御型との違いは？",a:"「内部にいるから安全」という前提を排除し、すべてのユーザー・機器・通信を都度検証・認証する。従来の境界防御型はファイアウォールで外部と内部を分けて内部は信頼していた",s:3},
 {q:"SIEMとは何か？IDS・IPSとの違いは？",a:"SIEM：複数の機器・ソフトのログを一元収集・分析し、セキュリティ脅威を包括的に検知する。IDS・IPSは個別の通信を監視するのに対し、SIEMはシステム全体のログを統合的に分析する",s:2}
 ]},
@@ -295,7 +253,7 @@ const D=[
 {q:"スパイラルモデルはウォーターフォールとプロトタイプのどちらの要素も持つ。その特徴は？",a:"複数のサブシステムごとにウォーターフォールの工程を繰り返す。リスクが高い部分から段階的に開発できる",s:2},
 {q:"エボリューショナルモデルとラウンドトリップモデルの違いは？",a:"エボリューショナルモデルは顧客要求の変化を前提に簡単なものから拡大する反復型。ラウンドトリップモデルは分析・設計・実装の工程を行き来しながらトライ＆エラーで完成させる",s:2},
 {q:"POA・DOA・OOAのそれぞれが使う主要な図は？",a:"POA：DFD（データフローダイアグラム）。DOA：ER図（エンティティ・リレーションシップ図）。OOA：UML（ユースケース図・クラス図等）",s:3},
-{q:"UMLの「ユースケース図」「シーケンス図」「クラス図」「ステートマシン図」「アクティビティ図」を1行で説明せよ。",a:"ユースケース図：ユーザーとシステムのやり取りを記述。シーケンス図：メッセージのやり取りを時系列に表現。クラス図：システムの概念・関係を記述。ステートマシン図：状態遷移を表現。アクティビティ図：フローチャートのUML版",s:3},
+{q:"UMLの「ユースケース図」「シーケンス図」「クラス図」「ステートマシン図」「アクティビティ図」を1行で説明せよ。",a:"ユースケース図：ユーザーとシステムのやり取りを記述。シーケンス図：メッセージのやり取りを時系列に表現。クラス図：システムの概念・関係を記述（ER図に近い）。ステートマシン図：状態遷移を表現。アクティビティ図：フローチャートのUML版",s:3},
 {q:"マッシュアップの具体例を答えよ。",a:"Google Mapに地域情報や天気情報を組み合わせて新しいサービスを提供する等",s:1},
 {q:"SOAとは何か？マイクロサービスとの関係は？",a:"ソフトウェアの機能を「サービス」という独立した部品に分割し、組み合わせてシステムを構築するアーキテクチャ。マイクロサービスはSOAをより細粒度にした現代的な実装方式",s:2}
 ]},
@@ -341,9 +299,9 @@ const D=[
 {q:"EAの4つのアーキテクチャを答えよ。",a:"①ビジネスアーキテクチャ（業務・業務フロー）②データアーキテクチャ（データ構造）③アプリケーションアーキテクチャ（情報システム）④テクノロジーアーキテクチャ（技術基盤）",s:3},
 {q:"リスクコントロールとリスクファイナンスに含まれる対策を分類せよ。",a:"リスクコントロール（損失最小化）：リスク回避・リスク低減。リスクファイナンス（金銭的対処）：リスク保有・リスク共有（分散・移転＝保険等）",s:3},
 {q:"CVRとチャーンレートの計算対象の違いは？",a:"CVR（コンバージョン率）：サイト訪問者のうち成果（購入・登録等）に至った割合。チャーンレート（解約率）：契約しているユーザーのうちサービスを解約した割合",s:3},
-{q:"LTVと平均継続期間の計算式を答えよ。",a:"平均継続期間 ＝ 1 ÷ 解約率。LTV ＝ 顧客・期間当たり平均利益 × 平均継続期間\n例：解約率10%、月次利益5000円 → 平均継続期間10か月 → LTV＝50,000円",s:3}
+{q:"LTVと平均継続期間の計算式を答えよ。",a:"平均継続期間 ＝ 1 ÷ 解約率。LTV ＝ 顧客・期間当たり平均利益 × 平均継続期間",s:3}
 ]},
-{title:"SHEET 17｜Web利用・その他IT",cards:[
+{title:"SHEET 17｜Web利用・その他IT関連用語",cards:[
 {q:"クローラと検索エンジンの関係は？クローラの別名は？",a:"クローラはWebページを巡回してデータを収集し検索エンジンのDBに登録するプログラム。スパイダー・ボットとも呼ぶ",s:2},
 {q:"ホワイトハットSEOとブラックハットSEOの違いと、それぞれのリスクは？",a:"ホワイトハット：検索エンジンのガイドライン準拠の正当な手法。ブラックハット：アルゴリズムを悪用して検索順位を操作→ペナルティでサイトが除外されるリスクあり",s:2},
 {q:"フィルターバブルとはどんな問題か？",a:"パーソナライズアルゴリズムにより、過去の検索・閲覧履歴に沿った情報ばかりが表示され、異なる意見・情報に触れにくくなる問題",s:3},
@@ -355,180 +313,128 @@ const D=[
 {q:"ブロックチェーンのデータ改ざんが困難な理由は？",a:"データを分散して複数のノードに記録し、各ブロックが前のブロックのハッシュ値を持つため、1箇所を書き換えても他のノードとの矛盾が発生し、改ざんが検出される",s:3},
 {q:"NFTとブロックチェーンの関係は？",a:"NFT（非代替性トークン）はブロックチェーン上に記録された一意で代替不可能なデジタルトークン。デジタルアート等の所有権の証明に使われる",s:2},
 {q:"Web3とは何か？Web2.0との違いは？",a:"Web3はブロックチェーンを基盤とする分散型インターネット（特定企業に依存しない）。Web2.0はGAFAのような中央集権的なプラットフォーム企業がデータを集中管理する",s:2},
+{q:"CIOとはどんな役職か？",a:"Chief Information Officer（最高情報責任者）。企業のIT戦略・情報管理全体を統括する経営幹部",s:2},
 {q:"TCOの構成要素は？初期費用だけではない理由は？",a:"TCO（Total Cost of Ownership）はハード・ソフト購入費（初期費用）だけでなく、運用・保守・サポート・教育・廃棄費用等も含む全体費用。IT投資判断には初期費用だけでなくTCO全体で評価すべき",s:3},
+{q:"EUCのメリットとリスクを答えよ。",a:"メリット：利用者が直接システムを開発・運用することで現場ニーズに即した対応が可能。リスク：ITスキルのない利用者が開発するとセキュリティ問題や品質低下が起きやすい",s:2},
 {q:"インダストリー4.0とは何か？どの国が推進しているか？",a:"製造業のデジタル化・IoT/AI活用による「第4次産業革命」を目指す概念。ドイツが主導",s:2}
 ]}
 ];
-
-/* ════════════════════════════════
-   STATE
-════════════════════════════════ */
-let S={ch:-1,ix:0,fl:false,mode:'all',diff:'all',rs:{}};
-
-function ld(){try{const s=localStorage.getItem('johou_v2');if(s)S.rs=JSON.parse(s)}catch(e){}}
-function sv(){try{localStorage.setItem('johou_v2',JSON.stringify(S.rs))}catch(e){}}
-function gk(c,q){return c+'.'+q}
-function gr(c,q){return S.rs[gk(c,q)]||0}
-function sr(c,q,v){S.rs[gk(c,q)]=v;sv()}
-
-/* ── card filtering ── */
+var S={ch:-1,ix:0,fl:false,md:'all',df:'all',rs:{}};
+function ld(){try{var s=localStorage.getItem('jv3');if(s)S.rs=JSON.parse(s);}catch(e){}}
+function sv(){try{localStorage.setItem('jv3',JSON.stringify(S.rs));}catch(e){}}
+function gk(c,q){return c+'.'+q;}
+function gr(c,q){return S.rs[gk(c,q)]||0;}
+function sr(c,q,v){S.rs[gk(c,q)]=v;sv();}
 function gc(){
   if(S.ch===-1)return[];
-  let cs=D[S.ch].cards.map((c,i)=>({...c,i}));
-  if(S.diff!=='all')cs=cs.filter(c=>c.s===parseInt(S.diff));
-  if(S.mode==='w')cs=cs.filter(c=>gr(S.ch,c.i)===-1);
-  if(S.mode==='u')cs=cs.filter(c=>gr(S.ch,c.i)===0);
-  if(S.mode==='s'){cs=[...cs];for(let i=cs.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[cs[i],cs[j]]=[cs[j],cs[i]]}}
+  var cs=D[S.ch].cards.map(function(c,i){return{q:c.q,a:c.a,s:c.s,i:i};});
+  if(S.df!=='all')cs=cs.filter(function(c){return c.s===parseInt(S.df);});
+  if(S.md==='w')cs=cs.filter(function(c){return gr(S.ch,c.i)===-1;});
+  if(S.md==='u')cs=cs.filter(function(c){return gr(S.ch,c.i)===0;});
+  if(S.md==='s'){for(var i=cs.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=cs[i];cs[i]=cs[j];cs[j]=t;}}
   return cs;
 }
-
-/* ── stats ── */
 function chs(ci){
-  const ch=D[ci];let ok=0,ng=0,t=ch.cards.length;
-  ch.cards.forEach((_,qi)=>{const r=gr(ci,qi);if(r===1)ok++;if(r===-1)ng++});
-  return{ok,ng,u:t-ok-ng,t};
+  var ok=0,ng=0,t=D[ci].cards.length;
+  D[ci].cards.forEach(function(_,qi){var r=gr(ci,qi);if(r===1)ok++;if(r===-1)ng++;});
+  return{ok:ok,ng:ng,u:t-ok-ng,t:t};
 }
 function all(){
-  let ok=0,ng=0,t=0;
-  D.forEach((_,ci)=>{const s=chs(ci);ok+=s.ok;ng+=s.ng;t+=s.t});
-  return{ok,ng,t,u:t-ok-ng};
+  var ok=0,ng=0,t=0;
+  D.forEach(function(_,ci){var s=chs(ci);ok+=s.ok;ng+=s.ng;t+=s.t;});
+  return{ok:ok,ng:ng,t:t,u:t-ok-ng};
 }
-
-/* ── star label ── */
 function sl(s){
-  if(s===3)return'<span class="star-badge s3b">★★★</span>';
-  if(s===2)return'<span class="star-badge s2b">★★</span>';
-  return'<span class="star-badge s1b">★</span>';
+  if(s===3)return '<span class="star s3">★★★</span>';
+  if(s===2)return '<span class="star s2">★★</span>';
+  return '<span class="star s1">★</span>';
 }
-
-/* ════════════════════════════════
-   RENDER
-════════════════════════════════ */
-function R(){document.getElementById('app').innerHTML=S.ch===-1?renderHome():renderQ()}
-
-function renderHome(){
-  const a=all();const p=a.t?Math.round(a.ok/a.t*100):0;
-  let h='<div class="header">'
-    +'<h1>情報システム <span>一問一答</span></h1>'
-    +'<div class="sub">中小企業診断士 2025｜SHEET 01〜17｜全'+a.t+'問</div>'
-    +'</div>'
-    +'<div class="pbar-wrap">'
-    +'<span class="lbl" style="color:var(--correct)">'+a.ok+'</span>'
+function sc(ci){S.ch=ci;S.ix=0;S.fl=false;S.md='all';S.df='all';R();}
+function gh(){S.ch=-1;R();}
+function sm(m){S.md=m;S.ix=0;S.fl=false;R();}
+function sd(d){S.df=d;S.ix=0;S.fl=false;R();}
+function fp(){S.fl=!S.fl;R();}
+function pv(){S.fl=false;var c=gc();S.ix=(S.ix-1+c.length)%c.length;R();}
+function nx(){S.fl=false;var c=gc();S.ix=(S.ix+1)%c.length;R();}
+function jd(v){var c=gc();if(!c.length)return;sr(S.ch,c[S.ix].i,v);S.fl=false;S.ix++;var nc=gc();if(S.ix>=nc.length)S.ix=0;R();}
+function ra(){if(confirm('学習記録をすべてリセットしますか？')){S.rs={};sv();R();}}
+function R(){document.getElementById('app').innerHTML=S.ch===-1?rH():rQ();}
+function rH(){
+  var a=all();var p=a.t?Math.round(a.ok/a.t*100):0;
+  var h='<div class="header"><h1>情報システム <span>一問一答</span></h1><div class="sub">中小企業診断士 2025 | 全'+a.t+'問</div></div>'
+    +'<div class="pbar-wrap"><span class="lbl" style="color:var(--correct)">'+a.ok+'</span>'
     +'<div class="pbar"><div class="pbar-fill" style="width:'+p+'%"></div></div>'
-    +'<span class="lbl" style="color:var(--sub)">'+a.t+'</span>'
-    +'</div>'
-    +'<div class="ch-list">';
-  D.forEach(function(ch,ci){
-    var s=chs(ci);var p2=s.t?Math.round(s.ok/s.t*100):0;
-    h+='<div class="ch-item" onclick="sc('+ci+')">'
-      +'<div class="ch-name">'+ch.title+'</div>'
-      +'<div class="ch-meta">'
-      +'<span class="ch-score">'+s.ok+'/'+s.t+'</span>'
-      +'<div class="ch-bar"><div class="ch-bar-fill" style="width:'+p2+'%"></div></div>'
-      +'</div></div>';
-  });
-  h+='</div><button class="reset-btn" onclick="ra()">学習記録をリセット</button>';
+    +'<span class="lbl" style="color:var(--sub)">'+a.t+'</span></div><div class="ch-list">';
+  for(var i=0;i<D.length;i++){
+    var s=chs(i);var p2=s.t?Math.round(s.ok/s.t*100):0;
+    h+='<div class="ch-item" onclick="sc('+i+')"><div class="ch-name">'+D[i].title+'</div>'
+      +'<div class="ch-meta"><span class="ch-score">'+s.ok+'/'+s.t+'</span>'
+      +'<div class="ch-bar"><div class="ch-bar-fill" style="width:'+p2+'%"></div></div></div></div>';
+  }
+  h+='</div><button class="rst" onclick="ra()">学習記録をリセット</button>';
   return h;
 }
-
-function renderQ(){
+function rQ(){
   var ch=D[S.ch];var s=chs(S.ch);var p=s.t?Math.round(s.ok/s.t*100):0;
   var cards=gc();
-  var title=ch.title.replace(/SHEET \d+[|｜]/,'');
-
-  var h='<div class="sub-header">'
-    +'<button class="nav-back" onclick="gh()">← 戻る</button>'
-    +'<div class="sub-title">'+title+'</div>'
-    +'<span class="count-badge">'+s.ok+'/'+s.t+'</span>'
-    +'</div>'
+  var title=ch.title.replace('SHEET 01|','').replace('SHEET 02|','').replace('SHEET 03|','')
+    .replace('SHEET 04|','').replace('SHEET 05|','').replace('SHEET 06|','')
+    .replace('SHEET 07|','').replace('SHEET 08|','').replace('SHEET 09|','')
+    .replace('SHEET 10|','').replace('SHEET 11|','').replace('SHEET 12|','')
+    .replace('SHEET 13|','').replace('SHEET 14|','').replace('SHEET 15|','')
+    .replace('SHEET 16|','').replace('SHEET 17|','')
+    .replace(/SHEET \d+[^\x00]*/,'');
+  var h='<div class="sub-header"><button class="bk" onclick="gh()">← 戻る</button>'
+    +'<div class="sub-title">'+ch.title+'</div><span class="cnt">'+s.ok+'/'+s.t+'</span></div>'
     +'<div class="pbar-wrap" style="padding:4px 0">'
     +'<span class="lbl" style="color:var(--correct);font-size:10px">'+s.ok+'</span>'
     +'<div class="pbar"><div class="pbar-fill" style="width:'+p+'%"></div></div>'
-    +'<span class="lbl" style="color:var(--sub);font-size:10px">'+s.t+'</span>'
-    +'</div>'
+    +'<span class="lbl" style="color:var(--sub);font-size:10px">'+s.t+'</span></div>'
     +'<div class="mode-bar">'
-    +'<button class="mode-btn '+(S.mode==='all'?'active':'')+'" onclick="setMode('all')">全て('+s.t+')</button>'
-    +'<button class="mode-btn '+(S.mode==='u'?'active':'')+'" onclick="setMode('u')">未習('+s.u+')</button>'
-    +'<button class="mode-btn '+(S.mode==='w'?'active':'')+'" onclick="setMode('w')">苦手('+s.ng+')</button>'
-    +'<button class="mode-btn '+(S.mode==='s'?'active':'')+'" onclick="setMode('s')">シャッフル</button>'
-    +'</div>'
-    +'<div class="diff-bar">'
-    +'<button class="diff-btn dall '+(S.diff==='all'?'active':'')+'" onclick="setDiff('all')">全★</button>'
-    +'<button class="diff-btn d3 '+(S.diff==='3'?'active':'')+'" onclick="setDiff('3')">★★★</button>'
-    +'<button class="diff-btn d2 '+(S.diff==='2'?'active':'')+'" onclick="setDiff('2')">★★</button>'
-    +'<button class="diff-btn d1 '+(S.diff==='1'?'active':'')+'" onclick="setDiff('1')">★</button>'
-    +'</div>';
-
+    +'<button class="mode-btn '+(S.md==='all'?'on':'')+'" onclick="sm(\'all\')">全て('+s.t+')</button>'
+    +'<button class="mode-btn '+(S.md==='u'?'on':'')+'" onclick="sm(\'u\')">未習('+s.u+')</button>'
+    +'<button class="mode-btn '+(S.md==='w'?'on':'')+'" onclick="sm(\'w\')">苦手('+s.ng+')</button>'
+    +'<button class="mode-btn '+(S.md==='s'?'on':'')+'" onclick="sm(\'s\')">シャッフル</button></div>'
+    +'<div class="mode-bar">'
+    +'<button class="diff-btn '+(S.df==='all'?'on':'')+'" onclick="sd(\'all\')">全★</button>'
+    +'<button class="diff-btn '+(S.df==='3'?'d3on':'')+'" onclick="sd(\'3\')">★★★</button>'
+    +'<button class="diff-btn '+(S.df==='2'?'d2on':'')+'" onclick="sd(\'2\')">★★</button>'
+    +'<button class="diff-btn '+(S.df==='1'?'d1on':'')+'" onclick="sd(\'1\')">★</button></div>';
   if(!cards.length){
-    var emsg=S.mode==='w'?'苦手な問題はありません':S.mode==='u'?'全問学習済みです':'この難易度の問題はありません';
-    h+='<div class="empty">'+emsg+'</div>'
-      +'<div class="nav"><button class="nav-btn" onclick="gh()">← 戻る</button></div>';
-    return h;
+    var em=S.md==='w'?'苦手な問題はありません':S.md==='u'?'全問学習済みです':'この難易度の問題はありません';
+    return h+'<div class="empty">'+em+'</div><div class="nav"><button class="nav-btn" onclick="gh()">← 戻る</button></div>';
   }
   if(S.ix>=cards.length)S.ix=0;
   var cd=cards[S.ix];
-
-  h+='<div class="card-wrap">'
-    +'<div class="card '+(S.fl?'flipped':'')+'" onclick="fp()">'
-    +'<div class="card-face card-front">'
-    +'<div class="card-no">'+(S.ix+1)+' / '+cards.length+'</div>'
-    +'<div class="card-label">QUESTION '+sl(cd.s)+'</div>'
+  var ans=cd.a.replace(/\n/g,'<br>');
+  h+='<div class="card-wrap"><div class="card '+(S.fl?'flipped':'')+'" onclick="fp()">'
+    +'<div class="card-face card-front"><div class="card-no">'+(S.ix+1)+'/'+cards.length+'</div>'
+    +'<div class="lbl-q">QUESTION '+sl(cd.s)+'</div>'
     +'<div class="card-q">'+cd.q+'</div>'
-    +'<div class="card-hint">タップで解答を表示</div>'
-    +'</div>'
-    +'<div class="card-face card-back">'
-    +'<div class="card-no">'+(S.ix+1)+' / '+cards.length+'</div>'
-    +'<div class="card-a-label">ANSWER</div>'
-    +'<div class="card-a">'+cd.a.replace(/\n/g,'<br>')+'</div>'
-    +'</div>'
-    +'</div></div>';
-
+    +'<div class="card-hint">タップで解答を表示</div></div>'
+    +'<div class="card-face card-back"><div class="card-no">'+(S.ix+1)+'/'+cards.length+'</div>'
+    +'<div class="lbl-a">ANSWER</div>'
+    +'<div class="card-a">'+ans+'</div></div></div></div>';
   if(S.fl){
     h+='<div class="actions">'
-      +'<button class="act-btn btn-wrong" onclick="judge(-1)">✕ 不正解</button>'
-      +'<button class="act-btn btn-skip" onclick="judge(0)">△ 微妙</button>'
-      +'<button class="act-btn btn-ok" onclick="judge(1)">○ 正解</button>'
-      +'</div>';
+      +'<button class="act-btn btn-wrong" onclick="jd(-1)">✕ 不正解</button>'
+      +'<button class="act-btn btn-skip" onclick="jd(0)">△ 微妙</button>'
+      +'<button class="act-btn btn-ok" onclick="jd(1)">○ 正解</button></div>';
   }
-
-  var flipLabel=S.fl?'次へ':'解答表示';
-  h+='<div class="nav">'
-    +'<button class="nav-btn" onclick="prev()">◀ 前</button>'
-    +'<button class="nav-btn primary" onclick="fp()">'+flipLabel+'</button>'
-    +'<button class="nav-btn" onclick="next()">次 ▶</button>'
-    +'</div>';
+  var lbl=S.fl?'次へ':'解答表示';
+  h+='<div class="nav"><button class="nav-btn" onclick="pv()">◀ 前</button>'
+    +'<button class="nav-btn pri" onclick="fp()">'+lbl+'</button>'
+    +'<button class="nav-btn" onclick="nx()">次 ▶</button></div>';
   return h;
 }
-
-/* ════════════════════════════════
-   ACTIONS
-════════════════════════════════ */
-function sc(ci){S.ch=ci;S.ix=0;S.fl=false;S.mode='all';S.diff='all';R()}
-function gh(){S.ch=-1;R()}
-function setMode(m){S.mode=m;S.ix=0;S.fl=false;R()}
-function setDiff(d){S.diff=d;S.ix=0;S.fl=false;R()}
-function fp(){S.fl=!S.fl;R()}
-function prev(){S.fl=false;const c=gc();S.ix=(S.ix-1+c.length)%c.length;R()}
-function next(){S.fl=false;const c=gc();S.ix=(S.ix+1)%c.length;R()}
-function judge(v){
-  const c=gc();if(!c.length)return;
-  sr(S.ch,c[S.ix].i,v);
-  S.fl=false;S.ix++;
-  const nc=gc();if(S.ix>=nc.length)S.ix=0;
-  R();
-}
-function ra(){if(confirm('学習記録をすべてリセットしますか？')){S.rs={};sv();R()}}
-
-/* ── swipe ── */
-let tx=0,ty=0;
-document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY},{passive:true});
-document.addEventListener('touchend',e=>{
+var tx=0,ty=0;
+document.addEventListener('touchstart',function(e){tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});
+document.addEventListener('touchend',function(e){
   if(S.ch===-1)return;
-  const dx=e.changedTouches[0].clientX-tx;
-  const dy=e.changedTouches[0].clientY-ty;
-  if(Math.abs(dx)>60&&Math.abs(dy)<40){if(dx>0)prev();else next();}
+  var dx=e.changedTouches[0].clientX-tx;
+  var dy=e.changedTouches[0].clientY-ty;
+  if(Math.abs(dx)>60&&Math.abs(dy)<40){if(dx>0)pv();else nx();}
 },{passive:true});
-
 ld();R();
 </script>
 </body>
