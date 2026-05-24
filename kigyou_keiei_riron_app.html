@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="企業経営理論暗記">
+<title>企業経営理論 一問一答｜診断士2025</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#07090f;--card:#111420;--card2:#181d2e;
+  --accent:#ff6b35;--accent2:#ffb88c;
+  --correct:#00c9a7;--wrong:#ff5252;--skip:#f5a623;
+  --s3:#ffd700;--s2:#a0b4c8;--s1:#7a8a9a;
+  --text:#eef2ff;--sub:#6a7a9a;--border:#232a40;
+  --glow:rgba(255,107,53,.18)
+}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,107,53,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,107,53,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+.app{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:env(safe-area-inset-top,12px) 16px 100px}
+
+.header{text-align:center;padding:18px 0 10px}
+.header h1{font-size:17px;font-weight:900;letter-spacing:2px;color:var(--text)}
+.header h1 span{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header .sub{font-size:10px;color:var(--sub);margin-top:5px;letter-spacing:1px}
+
+.pbar-wrap{display:flex;align-items:center;gap:10px;padding:8px 0}
+.pbar-wrap .lbl{font-size:11px;font-weight:700;min-width:28px;text-align:center}
+.pbar{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.pbar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--correct));transition:width .5s cubic-bezier(.4,0,.2,1)}
+
+.ch-list{display:grid;gap:7px;margin:10px 0}
+.ch-item{padding:13px 15px;background:var(--card);border-radius:12px;border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:.18s;position:relative;overflow:hidden}
+.ch-item::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,var(--glow),transparent);opacity:0;transition:.2s}
+.ch-item:active::before{opacity:1}
+.ch-item:active{transform:scale(.98)}
+.ch-name{font-size:12px;font-weight:700;flex:1;line-height:1.4}
+.ch-meta{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.ch-score{font-size:11px;color:var(--sub);font-weight:600}
+.ch-bar{width:50px;height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+.ch-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--correct));border-radius:2px;transition:width .4s}
+
+.star-badge{font-size:9px;font-weight:900;padding:2px 5px;border-radius:4px;margin-left:4px}
+.s3b{background:rgba(255,215,0,.15);color:var(--s3);border:1px solid rgba(255,215,0,.3)}
+.s2b{background:rgba(160,180,200,.12);color:var(--s2);border:1px solid rgba(160,180,200,.25)}
+.s1b{background:rgba(122,138,154,.1);color:var(--s1);border:1px solid rgba(122,138,154,.2)}
+
+.card-wrap{perspective:1400px;margin:14px 0;animation:fadeIn .28s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+.card{position:relative;width:100%;min-height:260px;cursor:pointer;transform-style:preserve-3d;transition:transform .48s cubic-bezier(.4,0,.2,1)}
+.card.flipped{transform:rotateY(180deg)}
+.card-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:14px;padding:22px 18px;display:flex;flex-direction:column;justify-content:center}
+.card-front{background:linear-gradient(145deg,#141828,#0f1420);border:1px solid var(--border)}
+.card-front::after{content:'';position:absolute;inset:0;border-radius:14px;background:radial-gradient(ellipse at 30% 20%,rgba(255,107,53,.06),transparent 60%);pointer-events:none}
+.card-label{font-size:9px;font-weight:900;letter-spacing:3px;margin-bottom:10px;color:var(--accent2)}
+.card-q{font-size:14px;line-height:1.75;font-weight:600}
+.card-hint{position:absolute;bottom:14px;right:16px;font-size:9px;color:var(--sub);letter-spacing:.5px}
+.card-no{position:absolute;top:14px;right:16px;font-size:10px;color:var(--sub);font-weight:700}
+.card-back{background:linear-gradient(145deg,#0c1a15,#0f1c18);border:1px solid rgba(0,201,167,.22);transform:rotateY(180deg)}
+.card-back::after{content:'';position:absolute;inset:0;border-radius:14px;background:radial-gradient(ellipse at 70% 80%,rgba(0,201,167,.06),transparent 60%);pointer-events:none}
+.card-a-label{font-size:9px;font-weight:900;letter-spacing:3px;margin-bottom:10px;color:var(--correct)}
+.card-a{font-size:13px;line-height:1.85;font-weight:500}
+
+.actions{display:flex;gap:8px;margin:12px 0}
+.act-btn{flex:1;padding:13px 6px;border:none;border-radius:11px;font-size:12px;font-weight:700;cursor:pointer;transition:.18s;font-family:inherit;-webkit-appearance:none;letter-spacing:.5px}
+.act-btn:active{transform:scale(.95)}
+.btn-wrong{background:rgba(255,82,82,.12);color:var(--wrong);border:1px solid rgba(255,82,82,.28)}
+.btn-skip{background:rgba(245,166,35,.1);color:var(--skip);border:1px solid rgba(245,166,35,.25)}
+.btn-ok{background:rgba(0,201,167,.12);color:var(--correct);border:1px solid rgba(0,201,167,.28)}
+
+.mode-bar{display:flex;gap:5px;flex-wrap:wrap;margin:6px 0}
+.mode-btn{padding:5px 11px;border-radius:14px;font-size:10px;font-weight:700;background:var(--card);border:1px solid var(--border);color:var(--sub);cursor:pointer;transition:.18s;-webkit-appearance:none;font-family:inherit}
+.mode-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 0 10px rgba(255,107,53,.35)}
+
+.diff-bar{display:flex;gap:5px;margin:4px 0 8px}
+.diff-btn{padding:4px 10px;border-radius:12px;font-size:10px;font-weight:700;border:1px solid var(--border);color:var(--sub);cursor:pointer;background:var(--card);transition:.18s;font-family:inherit;-webkit-appearance:none}
+.diff-btn.d3.active{background:rgba(255,215,0,.15);color:var(--s3);border-color:rgba(255,215,0,.4)}
+.diff-btn.d2.active{background:rgba(160,180,200,.12);color:var(--s2);border-color:rgba(160,180,200,.3)}
+.diff-btn.d1.active{background:rgba(122,138,154,.1);color:var(--s1);border-color:rgba(122,138,154,.25)}
+.diff-btn.dall.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+.nav{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:center;gap:7px;padding:10px 16px calc(env(safe-area-inset-bottom,8px)+8px);background:linear-gradient(transparent,var(--bg) 35%);z-index:10}
+.nav-btn{padding:8px 18px;border-radius:20px;font-size:11px;font-weight:700;background:var(--card);border:1px solid var(--border);color:var(--sub);cursor:pointer;font-family:inherit;-webkit-appearance:none;transition:.18s}
+.nav-btn:active{transform:scale(.95)}
+.nav-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 0 12px rgba(255,107,53,.4)}
+.nav-back{padding:6px 12px;border-radius:10px;font-size:11px;font-weight:700;background:transparent;border:1px solid var(--border);color:var(--sub);cursor:pointer;font-family:inherit;-webkit-appearance:none}
+
+.empty{text-align:center;padding:50px 20px;color:var(--sub);font-size:13px;line-height:1.8}
+.reset-btn{display:block;margin:24px auto 0;padding:8px 20px;border-radius:10px;font-size:11px;background:transparent;border:1px solid var(--border);color:var(--sub);cursor:pointer;font-family:inherit;-webkit-appearance:none;transition:.18s}
+.reset-btn:hover{border-color:var(--wrong);color:var(--wrong)}
+.sub-header{display:flex;align-items:center;justify-content:space-between;padding:6px 0 4px}
+.sub-title{font-size:12px;font-weight:700;flex:1;text-align:center;color:var(--text)}
+.count-badge{font-size:10px;color:var(--sub);font-weight:600}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+<script>
+const D=[
+{title:"第1部：経営戦略編",cards:[
+{q:"ポーターの5つの業界構造タイプのうち、「多数の小・中規模企業が存在し、市場シェアの大部分や主要技術を占有する企業がいない業界」を何というか？",a:"多数乱戦業界（市場分散型業界）",s:3},
+{q:"技術革新や市場需要の変動、新しい顧客ニーズの出現等によって新たに生まれた業界を何というか？ また、この業界で享受できる優位性は何か？",a:"新興業界。先行者優位性を享受できる。",s:3},
+{q:"成熟業界に存在する機会として、3つ挙げよ。",a:"①現行製品の改良 ②サービス品質の向上 ③プロセス革新による製造コストの削減と品質向上",s:2},
+{q:"エフェクチュエーションとコーゼーションの違いを説明せよ。",a:"エフェクチュエーション：高い不確実性に対して予測ではなくコントロールによって対処する手段主導型。コーゼーション：まず環境を分析し最適な計画を立てる計画先行型",s:3},
+{q:"エフェクチュエーションの5つの原則のうち、3つを挙げよ。",a:"①手中の鳥の原則 ②許容可能な損失の原則 ③レモネードの原則 ④クレイジーキルトの原則 ⑤飛行機の中のパイロットの原則",s:3},
+{q:"PPM（Product Portfolio Management）とは何か？ どのような目的で利用されるか？",a:"BCG開発の戦略策定支援ツール。企業が多角化により複数の事業を展開するときの総合効果を分析し、各事業への資源配分を決定するときに利用",s:3},
+{q:"製品ライフサイクル（PLC）の4段階を順に挙げよ。",a:"導入期→成長期→成熟期→衰退期",s:3},
+{q:"アンゾフの成長ベクトル（製品×市場マトリクス）において、「新製品×新市場」の戦略を何というか？",a:"多角化（多角化戦略）",s:3},
+{q:"「顧客がわざわざ慣れ親しんだ自社製品から他社製品へスイッチすることを躊躇する」ことを利用できるのは、先発優位性か後発優位性か？",a:"先発優位性（スイッチングコストの発生を利用）",s:3},
+{q:"先発優位性の要素を5つ挙げよ。",a:"①参入障壁形成 ②経験曲線効果実現 ③利用者の声を早期取得 ④イノベーター層取り込み ⑤市場ポジション先取り ⑥デファクトスタンダード決定 ⑦スイッチングコスト利用 ⑧希少資源先取り",s:2},
+{q:"後発優位性の要素を3つ挙げよ。",a:"①需要の不確実性見極め ②プロモーションコスト節約 ③模倣による研究開発コスト節約 ④顧客変化対応 ⑤技術不確実性対応",s:2},
+{q:"ドメインの「物理的定義」と「機能的定義」の違い、およびそれぞれのデメリットを説明せよ。",a:"物理的定義：「モノ」中心→現事業に縛られる。機能的定義：「コト」「顧客ニーズ」中心→抽象的になりターゲットや事業性格が不明確になりやすい",s:3},
+{q:"「ローリングプラン」と「コンティンジェンシープラン」の違いを説明せよ。",a:"ローリングプラン：中・長期計画を定期的に見直し部分修正。コンティンジェンシープラン：不測事象を想定し適応行動を事前策定（状況対応計画・シャドープラン）",s:2},
+{q:"ポジショニング派とケイパビリティ派の代表学者と主張の違いを説明せよ。",a:"ポジショニング派：ポーター・ポジショニング重視。ケイパビリティ派：ハメル&プラハラード・コアコンピタンス重視、バーニー・リソースベースドビュー",s:2},
+{q:"ヘンリー・ミンツバーグが提唱した「コンフィギュレーション」の主張を説明せよ。",a:"ポジショニングとケイパビリティのいずれを重視すべきかは置かれている状況によって異なる。戦略はパターン化できず状況次第で組み合わせる必要がある",s:2},
+{q:"M&Aと戦略的提携の違いを説明せよ。",a:"M&A：企業の統合・買収で事業拡大。戦略的提携：複数企業が協力関係を結ぶ（M&Aより緩やか）",s:1},
+{q:"PDCAサイクルとは何か？",a:"Plan（計画）→Do（実行）→Check（評価）→Act（改善）のサイクルを繰り返す継続的改善のマネジメント手法",s:1},
+{q:"一般的な経営計画の期間区分として、短期計画・中期計画・長期計画はそれぞれ何年か？",a:"短期計画：1年以内、中期計画：2〜3年、長期計画：3〜5年",s:1},
+{q:"ポーターの「3つの基本戦略」を挙げよ。",a:"①コストリーダーシップ戦略 ②差別化戦略 ③集中戦略",s:2},
+{q:"価値連鎖（バリューチェーン）とは何か？",a:"企業の活動を機能ごとに分解し、どの部分で価値（差別化や低コスト化）が生み出されるか、どの部分に強み・弱みがあるかを分析する手法",s:2}
+]},
+{title:"第2部：組織論編（前半）",cards:[
+{q:"ISO26000は第三者認証を取得できるか？",a:"取得できない。ISO26000は第三者認証を意図した規格ではなく、社会的責任（SR）に関する手引き（ガイダンス）として活用するもの",s:3},
+{q:"SRIにおける「ネガティブ・スクリーニング」と「ポジティブ・スクリーニング」の違いを説明せよ。",a:"ネガティブ：特定産業を投資対象から除外（1980年代まで）。ポジティブ：CSR活動を積極的に行う企業に投資（現在）",s:2},
+{q:"CSV（共通価値の創造）とCSRの違いを説明せよ。",a:"CSV：社会的課題解決で社会価値と経済価値を同時創造（事業戦略そのもの）。CSR：利潤追求とは一線を画す従来の社会貢献（事業外）",s:3},
+{q:"コーポレートガバナンスの4Cモデルを4つ挙げよ。また、留意点は何か？",a:"①Conscience（良心）②Connection（関係）③Command（独立性）④Control（監視）。各要素にプラス・マイナス面あり→バランス重要",s:2},
+{q:"「所有と経営の分離」と「所有と支配の分離」の違いを説明せよ。",a:"所有と経営の分離：株式会社の基本構造（株主と経営者の分離）。所有と支配の分離：株式分散後に経営者が事実上企業を支配する状態",s:3},
+{q:"カンパニー制の特徴を3つ、デメリットを1つ挙げよ。",a:"特徴：①事業部制より独立採算主義を徹底②バランスシート経営・投資収益性重視③事業規模大・研究開発から販売まで包含。デメリット：シナジー追求・事業再編が困難",s:3},
+{q:"組織の2大キーワードは何か？ また、それらの関係を説明せよ。",a:"分業と統合・調整。分業だけでは非効率なため、協働が有効に行われるには分業した仕事の統合や調整が必要",s:3},
+{q:"ブルームの期待理論において、人が動機づけられるための2つの要素は何か？",a:"①期待（努力が報酬をもたらす主観的確率）②誘意性（報酬の主観的魅力）。両方が大きい必要あり",s:3},
+{q:"ローラーの期待理論における「期待」の2段階を説明せよ。",a:"①努力すれば業績が向上するという期待②業績が望ましい報酬の入手につながるという期待。両方とも高い確率で期待できる必要あり",s:3},
+{q:"目標設定理論において、人が大きく動機づけられ高い業績につながるための2つの条件は何か？注意点は？",a:"条件：①難しい目標②目標を受け入れている。注意点：参加させても必ずしも高い業績につながるとは限らない",s:3},
+{q:"コンフリクトの発生要因を5つ挙げよ。最も誤解されやすい要因はどれか？",a:"①資源配分の不合意②自立性・パワー確保の意図③共通目標欠如④相互依存関係（←最も誤解されやすい）⑤タスク不確実性。相互依存は発生要因で統合で解消されない",s:3},
+{q:"コンフリクトへの対処方法として、5つの類型を挙げよ。",a:"①回避②競争③協調④妥協⑤適応",s:2},
+{q:"組織スラックとは何か？ メリットとデメリットを挙げよ。",a:"定義：余剰資源。メリット：イノベーション源泉・環境変化への緩衝材・組織安定性確保。デメリット：非効率・コスト増。必ずしも悪ではない",s:3}
+]},
+{title:"第2部：組織論編（後半）",cards:[
+{q:"グローバル企業の組織形態4類型の特徴を簡潔に説明せよ。",a:"①グローバル型：中央集中・親会社が戦略実行②トランスナショナル型：分散・相互依存・世界的統合③インターナショナル型：中核は中央集中・他は分散④マルチナショナル型：分散・海外子会社自律",s:3},
+{q:"経営人モデルにおける「極大化基準」と「満足化基準」の違いを説明せよ。",a:"極大化基準：目標は高いほど望ましい（経済人モデル）。満足化基準：十分満足できる最適化・制約された合理性の範囲内（経営人モデル）",s:3},
+{q:"組織における意思決定の3つの階層を挙げ、それぞれを説明せよ。",a:"①業務的：ローワーマネジメント・日常的・定型的②管理的：ミドルマネジメント・戦略実行のための資源調達③戦略的：トップマネジメント・長期的・非定型的",s:3},
+{q:"「例外の原則」とは何か？ また、別名は何か？",a:"経営者は日常反復的業務を下位レベルに委譲し、例外的業務（戦略的意思決定・非定型的意思決定）に専念すべき。別名：権限委譲の原則",s:3},
+{q:"組織における「グレシャムの法則」とは何か？",a:"定型的意思決定に殺され、非定型的意思決定が後回しになり、将来の計画策定が事実上消滅してしまうこと",s:2},
+{q:"リーダーシップ理論における「特性論」と「行動論」の違いを説明せよ。",a:"特性論：リーダーに共通する特性（性格・能力・知識等）を見つける。行動論：リーダーの「行動」に着目しどのような行動がリーダーシップを発揮するか研究",s:2},
+{q:"PM理論における「P機能」と「M機能」とは何か？",a:"P機能（Performance）：目標達成機能・集団の課題達成に関する行動。M機能（Maintenance）：集団維持機能・人間関係維持に関する行動",s:2},
+{q:"ソーシャル・マーケティングとサステイナブル・マーケティングの違いを説明せよ。",a:"ソーシャル：地球環境や社会への悪影響防止・社会利益重視。サステイナブル：現在の企業ニーズと将来の消費者ニーズを満たす・現在と将来の両ニーズ充足",s:3},
+{q:"非営利組織のマーケティングとは何か？",a:"政府組織・学校・病院・美術館などの非営利組織が事業目的達成の際にマーケティング手法を適用すること",s:2},
+{q:"アイデア・社会的主張を対象とするマーケティングの例を挙げよ。",a:"経済財ではなくアイデアや社会的主張を扱うマーケティング。環境保護運動・エイズ予防などの社会変革キャンペーン",s:1},
+{q:"OJT・Off-JT・自己啓発の違いを説明せよ。",a:"OJT：実際に仕事を行いながら上司が指導。Off-JT：職場を離れて行う研修。自己啓発：従業員が自発的に能力開発",s:2},
+{q:"ブレーンストーミングの4原則を挙げよ。",a:"①批判厳禁②自由奔放③質より量④結合改善",s:2}
+]},
+{title:"第3部：労働法編",cards:[
+{q:"労働基準法における法定労働時間は？",a:"1日8時間、1週40時間",s:3},
+{q:"労働基準法における休憩時間の規定は？",a:"労働時間が6時間超：少なくとも45分。労働時間が8時間超：少なくとも1時間",s:3},
+{q:"年次有給休暇が初めて付与される条件は？",a:"①6ヶ月継続勤務②全労働日の8割以上出勤→上記を満たすと10日付与",s:3},
+{q:"解雇予告の規定は？",a:"使用者が労働者を解雇する場合、少なくとも30日前に予告するか、30日分以上の平均賃金（解雇予告手当）を支払う必要あり",s:3},
+{q:"賃金支払いの5原則を挙げよ。",a:"①通貨払い②直接払い③全額払い④毎月1回以上払い⑤一定期日払い",s:3}
+]},
+{title:"補足：重要概念まとめ",cards:[
+{q:"リレーショナルDBとNoSQLの使い分けは？",a:"リレーショナルDB：構造化データ・高い一貫性が必要な基幹系。NoSQL：非構造化データ・大量データ・高速処理が必要なビッグデータ系",s:2},
+{q:"ACID特性の4つを答えよ。",a:"A（Atomicity・原子性）：すべて完了かすべて未実行。C（Consistency・整合性）：実行後も整合性保持。I（Isolation・独立性）：複数トランザクション同時実行でも影響なし。D（Durability・耐久性）：コミット後は障害でも失われない",s:3},
+{q:"デッドロックとはどのような状態か？",a:"複数トランザクションが互いに相手のロック解除を待ち合って処理が永久に進まなくなる状態",s:3},
+{q:"スケールアウトとスケールアップの違いは？向いている用途は？",a:"スケールアウト：台数を増やす→Web系・高可用性システム。スケールアップ：1台のスペックを上げる→DB系・垂直スケーリング",s:3},
+{q:"共通鍵暗号方式と公開鍵暗号方式を「鍵の種類・速度・鍵配送問題」で比較せよ。",a:"共通鍵：同じ鍵で暗号化復号・速い・鍵配送問題あり。公開鍵：公開鍵で暗号化・秘密鍵で復号・遅い・鍵配送問題なし",s:3},
+{q:"デジタル署名が「改ざん検知」と「本人確認」の両方をできる理由は？",a:"送信者の秘密鍵で署名→受信者が送信者の公開鍵で検証。秘密鍵は本人のみ保持→本人確認。ハッシュ値一致確認→改ざん検知",s:3},
+{q:"ゼロトラストの考え方とは？従来の境界防御型との違いは？",a:"ゼロトラスト：「内部にいるから安全」を排除しすべてのユーザー・機器・通信を都度検証認証。従来：ファイアウォールで外部と内部を分け内部は信頼",s:3},
+{q:"アジャイル開発の4つの価値を答えよ。",a:"①プロセスやツールより人②文書より動くプログラム③契約上の交渉より協調④計画より変化への対応",s:3},
+{q:"スクラムの「スプリント」とは何か？「スプリントレビュー」は何をするか？",a:"スプリント：一定期間（1〜4週間）の開発イテレーション。スプリントレビュー：スプリント終了時に関係者へ作業結果を提示しフィードバックをもらう",s:3},
+{q:"EVMのSPIが1.0未満の場合、プロジェクトはどんな状態か？",a:"スケジュールが遅延している（SPI＝EV/PV。1.0未満は計画より進捗が遅い）",s:3},
+{q:"IaaS・PaaS・SaaSで「アプリケーション」を誰が管理するか？",a:"IaaS：自社管理。PaaS：自社管理。SaaS：クラウド事業者が管理",s:3},
+{q:"パブリッククラウドとプライベートクラウドのセキュリティ・コストの違いは？",a:"パブリック：コスト低・不特定多数と共有でセキュリティリスクあり。プライベート：コスト高・自社専用でセキュリティ管理しやすい",s:2},
+{q:"ERPとEAIの違いは？",a:"ERP：複数業務システムを1つに統合するパッケージソフト（データ一元管理）。EAI：既存の別々のシステムを仮想的に1つに見せる統合技術（既存システム連携）",s:2},
+{q:"機械学習の「教師あり学習」「教師なし学習」「強化学習」の違いは？",a:"教師あり：正解データで学習。教師なし：正解データなし・構造パターンを自己発見。強化学習：報酬・ペナルティで最適行動を学習",s:2},
+{q:"ブロックチェーンのデータ改ざんが困難な理由は？",a:"データを分散して複数ノードに記録し各ブロックが前ブロックのハッシュ値を持つため、1箇所を書き換えても他ノードとの矛盾が発生し改ざんが検出される",s:2}
+]},
+];
+
+let S={ch:-1,ix:0,fl:false,mode:'all',diff:'all',rs:{}};
+
+function ld(){try{const s=localStorage.getItem('kigyou_v1');if(s)S.rs=JSON.parse(s)}catch(e){}}
+function sv(){try{localStorage.setItem('kigyou_v1',JSON.stringify(S.rs))}catch(e){}}
+function gk(c,q){return c+'.'+q}
+function gr(c,q){return S.rs[gk(c,q)]||0}
+function sr(c,q,v){S.rs[gk(c,q)]=v;sv()}
+
+function gc(){
+  if(S.ch===-1)return[];
+  let cs=D[S.ch].cards.map((c,i)=>({...c,i}));
+  if(S.diff!=='all')cs=cs.filter(c=>c.s===parseInt(S.diff));
+  if(S.mode==='w')cs=cs.filter(c=>gr(S.ch,c.i)===-1);
+  if(S.mode==='u')cs=cs.filter(c=>gr(S.ch,c.i)===0);
+  if(S.mode==='s'){cs=[...cs];for(let i=cs.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[cs[i],cs[j]]=[cs[j],cs[i]]}}
+  return cs;
+}
+
+function chs(ci){
+  const ch=D[ci];let ok=0,ng=0,t=ch.cards.length;
+  ch.cards.forEach((_,qi)=>{const r=gr(ci,qi);if(r===1)ok++;if(r===-1)ng++});
+  return{ok,ng,u:t-ok-ng,t};
+}
+function all(){
+  let ok=0,ng=0,t=0;
+  D.forEach((_,ci)=>{const s=chs(ci);ok+=s.ok;ng+=s.ng;t+=s.t});
+  return{ok,ng,t,u:t-ok-ng};
+}
+
+function sl(s){
+  if(s===3)return'<span class="star-badge s3b">★★★</span>';
+  if(s===2)return'<span class="star-badge s2b">★★</span>';
+  return'<span class="star-badge s1b">★</span>';
+}
+
+function R(){document.getElementById('app').innerHTML=S.ch===-1?renderHome():renderQ()}
+
+function renderHome(){
+  const a=all();const p=a.t?Math.round(a.ok/a.t*100):0;
+  let h='<div class="header">'
+    +'<h1>企業経営理論 <span>一問一答</span></h1>'
+    +'<div class="sub">中小企業診断士 2025｜過去問ベース｜全'+a.t+'問</div>'
+    +'</div>'
+    +'<div class="pbar-wrap">'
+    +'<span class="lbl" style="color:var(--correct)">'+a.ok+'</span>'
+    +'<div class="pbar"><div class="pbar-fill" style="width:'+p+'%"></div></div>'
+    +'<span class="lbl" style="color:var(--sub)">'+a.t+'</span>'
+    +'</div>'
+    +'<div class="ch-list">';
+  D.forEach(function(ch,ci){
+    var s=chs(ci);var p2=s.t?Math.round(s.ok/s.t*100):0;
+    h+='<div class="ch-item" onclick="sc('+ci+')">'
+      +'<div class="ch-name">'+ch.title+'</div>'
+      +'<div class="ch-meta">'
+      +'<span class="ch-score">'+s.ok+'/'+s.t+'</span>'
+      +'<div class="ch-bar"><div class="ch-bar-fill" style="width:'+p2+'%"></div></div>'
+      +'</div></div>';
+  });
+  h+='</div><button class="reset-btn" onclick="ra()">学習記録をリセット</button>';
+  return h;
+}
+
+function renderQ(){
+  var ch=D[S.ch];var s=chs(S.ch);var p=s.t?Math.round(s.ok/s.t*100):0;
+  var cards=gc();
+  var title=ch.title;
+
+  var h='<div class="sub-header">'
+    +'<button class="nav-back" onclick="gh()">← 戻る</button>'
+    +'<div class="sub-title">'+title+'</div>'
+    +'<span class="count-badge">'+s.ok+'/'+s.t+'</span>'
+    +'</div>'
+    +'<div class="pbar-wrap" style="padding:4px 0">'
+    +'<span class="lbl" style="color:var(--correct);font-size:10px">'+s.ok+'</span>'
+    +'<div class="pbar"><div class="pbar-fill" style="width:'+p+'%"></div></div>'
+    +'<span class="lbl" style="color:var(--sub);font-size:10px">'+s.t+'</span>'
+    +'</div>'
+    +'<div class="mode-bar">'
+    +'<button class="mode-btn '+(S.mode==='all'?'active':'')+'" onclick="setMode(\'all\')">全て('+s.t+')</button>'
+    +'<button class="mode-btn '+(S.mode==='u'?'active':'')+'" onclick="setMode(\'u\')">未習('+s.u+')</button>'
+    +'<button class="mode-btn '+(S.mode==='w'?'active':'')+'" onclick="setMode(\'w\')">苦手('+s.ng+')</button>'
+    +'<button class="mode-btn '+(S.mode==='s'?'active':'')+'" onclick="setMode(\'s\')">シャッフル</button>'
+    +'</div>'
+    +'<div class="diff-bar">'
+    +'<button class="diff-btn dall '+(S.diff==='all'?'active':'')+'" onclick="setDiff(\'all\')">全★</button>'
+    +'<button class="diff-btn d3 '+(S.diff==='3'?'active':'')+'" onclick="setDiff(\'3\')">★★★</button>'
+    +'<button class="diff-btn d2 '+(S.diff==='2'?'active':'')+'" onclick="setDiff(\'2\')">★★</button>'
+    +'<button class="diff-btn d1 '+(S.diff==='1'?'active':'')+'" onclick="setDiff(\'1\')">★</button>'
+    +'</div>';
+
+  if(!cards.length){
+    var emsg=S.mode==='w'?'苦手な問題はありません':S.mode==='u'?'全問学習済みです':'この難易度の問題はありません';
+    h+='<div class="empty">'+emsg+'</div>'
+      +'<div class="nav"><button class="nav-btn" onclick="gh()">← 戻る</button></div>';
+    return h;
+  }
+  if(S.ix>=cards.length)S.ix=0;
+  var cd=cards[S.ix];
+
+  h+='<div class="card-wrap">'
+    +'<div class="card '+(S.fl?'flipped':'')+'" onclick="fp()">'
+    +'<div class="card-face card-front">'
+    +'<div class="card-no">'+(S.ix+1)+' / '+cards.length+'</div>'
+    +'<div class="card-label">QUESTION '+sl(cd.s)+'</div>'
+    +'<div class="card-q">'+cd.q+'</div>'
+    +'<div class="card-hint">タップで解答を表示</div>'
+    +'</div>'
+    +'<div class="card-face card-back">'
+    +'<div class="card-no">'+(S.ix+1)+' / '+cards.length+'</div>'
+    +'<div class="card-a-label">ANSWER</div>'
+    +'<div class="card-a">'+cd.a.replace(/\n/g,'<br>')+'</div>'
+    +'</div>'
+    +'</div></div>';
+
+  if(S.fl){
+    h+='<div class="actions">'
+      +'<button class="act-btn btn-wrong" onclick="judge(-1)">✕ 不正解</button>'
+      +'<button class="act-btn btn-skip" onclick="judge(0)">△ 微妙</button>'
+      +'<button class="act-btn btn-ok" onclick="judge(1)">○ 正解</button>'
+      +'</div>';
+  }
+
+  var flipLabel=S.fl?'次へ':'解答表示';
+  h+='<div class="nav">'
+    +'<button class="nav-btn" onclick="prev()">◀ 前</button>'
+    +'<button class="nav-btn primary" onclick="fp()">'+flipLabel+'</button>'
+    +'<button class="nav-btn" onclick="next()">次 ▶</button>'
+    +'</div>';
+  return h;
+}
+
+function sc(ci){S.ch=ci;S.ix=0;S.fl=false;S.mode='all';S.diff='all';R()}
+function gh(){S.ch=-1;R()}
+function setMode(m){S.mode=m;S.ix=0;S.fl=false;R()}
+function setDiff(d){S.diff=d;S.ix=0;S.fl=false;R()}
+function fp(){S.fl=!S.fl;R()}
+function prev(){S.fl=false;const c=gc();S.ix=(S.ix-1+c.length)%c.length;R()}
+function next(){S.fl=false;const c=gc();S.ix=(S.ix+1)%c.length;R()}
+function judge(v){
+  const c=gc();if(!c.length)return;
+  sr(S.ch,c[S.ix].i,v);
+  S.fl=false;S.ix++;
+  const nc=gc();if(S.ix>=nc.length)S.ix=0;
+  R();
+}
+function ra(){if(confirm('学習記録をすべてリセットしますか？')){S.rs={};sv();R()}}
+
+let tx=0,ty=0;
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY},{passive:true});
+document.addEventListener('touchend',e=>{
+  if(S.ch===-1)return;
+  const dx=e.changedTouches[0].clientX-tx;
+  const dy=e.changedTouches[0].clientY-ty;
+  if(Math.abs(dx)>60&&Math.abs(dy)<40){if(dx>0)prev();else next();}
+},{passive:true});
+
+ld();R();
+</script>
+</body>
+</html>
